@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 
 interface Option {
@@ -12,9 +12,17 @@ interface CustomSelectProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  theme?: 'light' | 'dark';
 }
 
-export function CustomSelect({ options, value, onChange, placeholder, className = '' }: CustomSelectProps) {
+export function CustomSelect({
+  options,
+  value,
+  onChange,
+  placeholder,
+  className = '',
+  theme = 'dark'
+}: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -49,33 +57,37 @@ export function CustomSelect({ options, value, onChange, placeholder, className 
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-3 rounded-2xl text-white border border-white/10 transition-all focus:border-white/30 focus:outline-none flex items-center justify-between"
-        style={{ 
-          backgroundColor: '#080808', 
-          fontFamily: 'Inter, sans-serif', 
+        className={`w-full px-4 py-3 rounded-[24px] transition-all focus:outline-none flex items-center justify-between border ${theme === 'light'
+          ? 'bg-[#F5F5F5] text-black border-black/5 focus:border-black/20'
+          : 'bg-[#080808] text-white border-white/10 focus:border-white/30'
+          }`}
+        style={{
+          fontFamily: 'Boston, sans-serif',
           fontSize: '1rem',
-          ...(isOpen && { borderColor: 'rgba(255, 255, 255, 0.3)' })
+          ...(isOpen && {
+            borderColor: theme === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.3)'
+          })
         }}
       >
         <span className="truncate text-left">
           {selectedOption ? selectedOption.label : placeholder}
         </span>
-        <ChevronDown 
+        <ChevronDown
           className={`w-5 h-5 ml-2 flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-          style={{ color: 'rgba(255, 255, 255, 0.5)' }}
+          style={{ color: theme === 'light' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)' }}
         />
       </button>
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div 
-          className="absolute top-full left-0 right-0 mt-2 rounded-3xl overflow-hidden border border-white/10 z-50 shadow-2xl"
-          style={{ 
-            backgroundColor: '#1A1C19',
+        <div
+          className={`absolute top-full left-0 right-0 mt-2 rounded-3xl overflow-hidden z-50 shadow-2xl border ${theme === 'light' ? 'bg-white border-black/5' : 'bg-[#1A1C19] border-white/10'
+            }`}
+          style={{
             maxHeight: '280px',
             overflowY: 'auto',
             animation: 'slideDown 0.2s ease-out',
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)'
+            boxShadow: theme === 'light' ? '0 20px 60px rgba(0, 0, 0, 0.1)' : '0 20px 60px rgba(0, 0, 0, 0.5)'
           }}
         >
           <style>{`
@@ -90,7 +102,7 @@ export function CustomSelect({ options, value, onChange, placeholder, className 
               }
             }
           `}</style>
-          
+
           {options.map((option, index) => (
             <button
               key={option.value}
@@ -98,23 +110,25 @@ export function CustomSelect({ options, value, onChange, placeholder, className 
               onClick={() => handleSelect(option.value)}
               className="w-full px-5 py-3.5 text-left transition-all flex items-center justify-between"
               style={{
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'Boston, sans-serif',
                 fontSize: '0.9375rem',
-                color: value === option.value ? '#FFFFFF' : 'rgba(255, 255, 255, 0.7)',
+                color: value === option.value
+                  ? (theme === 'light' ? '#000000' : '#FFFFFF')
+                  : (theme === 'light' ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.7)'),
                 backgroundColor: 'transparent',
-                borderTop: index === 0 ? 'none' : '1px solid rgba(255, 255, 255, 0.05)',
+                borderTop: index === 0 ? 'none' : `1px solid ${theme === 'light' ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'}`,
                 fontWeight: value === option.value ? 600 : 400
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+              onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.backgroundColor = theme === 'light' ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.08)';
               }}
-              onMouseLeave={(e) => {
+              onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.currentTarget.style.backgroundColor = 'transparent';
               }}
             >
               <span>{option.label}</span>
               {value === option.value && (
-                <Check className="w-5 h-5 ml-2" style={{ color: '#FFFFFF' }} />
+                <Check className="w-5 h-5 ml-2" style={{ color: theme === 'light' ? '#000000' : '#FFFFFF' }} />
               )}
             </button>
           ))}

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Plus, ArrowUpDown } from 'lucide-react';
-import { Subscription, SortOption, PASTEL_COLORS } from './types/subscription';
+import { motion } from 'motion/react';
+import { Subscription, SortOption, PASTEL_COLORS, DARK_TEXT_COLORS } from './types/subscription';
 import { SubscriptionCard } from './components/SubscriptionCard';
 import { SubscriptionForm } from './components/SubscriptionForm';
 import { CustomSelect } from './components/CustomSelect';
@@ -55,7 +56,7 @@ function App() {
   const [sortOption, setSortOption] = useState<SortOption>('alphabetical');
 
   const totalMonthlySpend = useMemo(() => {
-    return subscriptions.reduce((total, sub) => total + getMonthlyCost(sub), 0);
+    return subscriptions.reduce((total: number, sub: Subscription) => total + getMonthlyCost(sub), 0);
   }, [subscriptions]);
 
   const sortedAndGroupedSubscriptions = useMemo(() => {
@@ -90,15 +91,15 @@ function App() {
 
   const handleAddOrEdit = (data: Omit<Subscription, 'id'>) => {
     if (editingSubscription) {
-      setSubscriptions(subs =>
-        subs.map(sub =>
+      setSubscriptions((subs: Subscription[]) =>
+        subs.map((sub: Subscription) =>
           sub.id === editingSubscription.id
             ? { ...data, id: editingSubscription.id }
             : sub
         )
       );
     } else {
-      setSubscriptions(subs => [
+      setSubscriptions((subs: Subscription[]) => [
         ...subs,
         { ...data, id: Date.now().toString() }
       ]);
@@ -114,7 +115,7 @@ function App() {
 
   const handleDelete = (id: string) => {
     if (confirm('Tem certeza que deseja remover esta assinatura?')) {
-      setSubscriptions(subs => subs.filter(sub => sub.id !== id));
+      setSubscriptions((subs: Subscription[]) => subs.filter((sub: Subscription) => sub.id !== id));
     }
   };
 
@@ -137,63 +138,69 @@ function App() {
     <div className="min-h-screen" style={{ backgroundColor: '#000000' }}>
       <div className="max-w-md mx-auto px-4 py-6">
         {/* Header */}
-        <div 
-          className="p-8 rounded-[32px] mb-6"
-          style={{ 
-            backgroundColor: '#1A1C19',
-            minHeight: '380px',
+        <div
+          className="p-5 rounded-[32px] mb-6"
+          style={{
+            backgroundColor: '#FFFFFF',
+            minHeight: '760px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between'
           }}
         >
-          <div className="mb-8">
-            <div className="mb-8">
-              <p className="text-white/50 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.875rem' }}>
-                Gasto Total Mensal
-              </p>
-              <p 
-                className="text-white"
-                style={{ fontFamily: 'Cambo, serif', fontSize: '3.5rem', fontWeight: 400, lineHeight: 1 }}
-              >
-                {formatCurrency(totalMonthlySpend)}
-              </p>
+          {/* Plasma Blob Centered */}
+          <div className="flex-1 flex items-center justify-center py-8">
+            <div className="plasma-blob">
+              <div className="text-center">
+                <p className="text-black/50 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.875rem' }}>
+                  Gasto Total Mensal
+                </p>
+                <p
+                  className="text-black"
+                  style={{ fontFamily: 'Bookmania, serif', fontSize: '3.2rem', fontWeight: 400, lineHeight: 1 }}
+                >
+                  {formatCurrency(totalMonthlySpend)}
+                </p>
+              </div>
             </div>
+          </div>
 
+          <div>
             <button
               onClick={() => setView('form')}
-              className="w-full px-6 py-4 rounded-full bg-white text-black hover:bg-white/90 transition-colors flex items-center justify-center gap-2"
+              className="w-full px-6 py-4 rounded-[24px] bg-black text-white hover:bg-black/90 transition-colors flex items-center justify-center gap-2 mb-6"
               style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: '1rem' }}
             >
               <Plus className="w-5 h-5" />
               Nova Assinatura
             </button>
-          </div>
 
-          <div>
-            <label className="text-white/50 text-sm mb-3 block" style={{ fontFamily: 'Inter, sans-serif' }}>
-              Ordenar por
-            </label>
-            <div className="flex items-center gap-2">
-              <ArrowUpDown className="w-4 h-4 text-white/50 flex-shrink-0" />
-              <CustomSelect
-                value={sortOption}
-                onChange={(value) => setSortOption(value as SortOption)}
-                options={[
-                  { value: 'alphabetical', label: 'Ordem Alfabética' },
-                  { value: 'cost-desc', label: 'Maior Custo Mensal' },
-                  { value: 'cost-asc', label: 'Menor Custo Mensal' },
-                  { value: 'usage-cost', label: 'Maior Custo por Uso' }
-                ]}
-                className="flex-1"
-              />
+            <div>
+              <label className="text-black/50 text-sm mb-3 block" style={{ fontFamily: 'Inter, sans-serif' }}>
+                Ordenar por
+              </label>
+              <div className="flex items-center gap-2">
+                <ArrowUpDown className="w-4 h-4 text-black/50 flex-shrink-0" />
+                <CustomSelect
+                  value={sortOption}
+                  onChange={(value) => setSortOption(value as SortOption)}
+                  theme="light"
+                  options={[
+                    { value: 'alphabetical', label: 'Ordem Alfabética' },
+                    { value: 'cost-desc', label: 'Maior Custo Mensal' },
+                    { value: 'cost-asc', label: 'Menor Custo Mensal' },
+                    { value: 'usage-cost', label: 'Maior Custo por Uso' }
+                  ]}
+                  className="flex-1"
+                />
+              </div>
             </div>
           </div>
         </div>
 
         {/* Subscriptions List */}
         {subscriptions.length === 0 ? (
-          <div 
+          <div
             className="p-8 rounded-[24px] text-center"
             style={{ backgroundColor: '#1A1C19' }}
           >
@@ -208,10 +215,10 @@ function App() {
           <div className="space-y-6">
             {Object.entries(sortedAndGroupedSubscriptions).map(([category, subs], categoryIndex) => {
               const categoryColor = PASTEL_COLORS[categoryIndex % PASTEL_COLORS.length];
-              
+
               return (
                 <div key={category}>
-                  <h2 
+                  <h2
                     className="text-white mb-3 ml-1"
                     style={{ fontFamily: 'Cambo, serif', fontSize: '1.5rem', fontWeight: 400 }}
                   >
@@ -219,13 +226,26 @@ function App() {
                   </h2>
                   <div className="space-y-3">
                     {subs.map((subscription) => (
-                      <SubscriptionCard
+                      <motion.div
                         key={subscription.id}
-                        subscription={subscription}
-                        color={categoryColor}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                      />
+                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 100,
+                          damping: 15,
+                          mass: 1
+                        }}
+                      >
+                        <SubscriptionCard
+                          subscription={subscription}
+                          color={categoryColor}
+                          textColor={DARK_TEXT_COLORS[categoryIndex % DARK_TEXT_COLORS.length]}
+                          onEdit={handleEdit}
+                          onDelete={handleDelete}
+                        />
+                      </motion.div>
                     ))}
                   </div>
                 </div>

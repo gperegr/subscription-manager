@@ -6,11 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor de Assinaturas</title>
 
-    <!-- Google Fonts para Cambo e Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cambo&family=Inter:wght@400;500;600&display=swap"
-        rel="stylesheet">
+    <!-- Custom Fonts: Bookmania and Boston -->
+
 
     <!-- Configuração de Utilitários Genéricos (Tailwind mantido para layout grid/flex, espaçamentos p-*, m-*) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -82,12 +79,12 @@
         body {
             background-color: #000000;
             color: #FFFFFF;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Boston', sans-serif;
             -webkit-font-smoothing: antialiased;
         }
 
-        .font-cambo {
-            font-family: 'Cambo', serif;
+        .font-bookmania {
+            font-family: 'Bookmania', serif;
         }
 
         /* Custom Select Styles */
@@ -108,6 +105,42 @@
                 transform: translateY(0) scale(1);
             }
         }
+
+        @keyframes morph {
+            0% {
+                border-radius: 60% 40% 30% 70%/60% 30% 70% 40%;
+            }
+
+            50% {
+                border-radius: 30% 60% 70% 40%/50% 60% 30% 60%;
+            }
+
+            100% {
+                border-radius: 60% 40% 30% 70%/60% 30% 70% 40%;
+            }
+        }
+
+        .plasma-blob {
+            width: 340px;
+            height: 340px;
+            background-color: #B9CFFE;
+            animation: morph 12s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Elastic Scroll Effect */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
     </style>
 </head>
 
@@ -116,57 +149,62 @@
     <div class="max-w-md mx-auto px-4 py-6">
 
         <div id="main-view">
-            <!-- Cabeçalho / Resumo (Block Dark #1A1C19) -->
-            <div class="p-8 rounded-[32px] mb-6 flex flex-col justify-between min-h-[380px]"
-                style="background-color: #1A1C19;">
-                <div class="mb-8">
-                    <div class="mb-8">
-                        <p class="text-white/50 mb-2 text-sm">Gasto Total Mensal</p>
-                        <p class="text-white font-cambo font-normal text-[3.5rem] leading-none" id="total-monthly-cost">
-                            R$ 0,00
-                        </p>
-                    </div>
+            <!-- Cabeçalho / Resumo (Block White #FFFFFF) -->
+            <div class="p-5 rounded-[32px] mb-6 flex flex-col justify-between"
+                style="background-color: #FFFFFF; min-height: 760px;">
 
-                    <button onclick="toggleView('form')"
-                        class="w-full px-6 py-4 rounded-full bg-white text-black hover:bg-white/90 transition-colors flex items-center justify-center gap-2 font-semibold text-base">
-                        <i class="fa-solid fa-plus"></i> Nova Assinatura
-                    </button>
+                <!-- Plasma Blob Centered -->
+                <div class="flex-1 flex items-center justify-center py-8">
+                    <div class="plasma-blob">
+                        <div class="text-center">
+                            <p class="text-black/50 mb-2 text-sm">Gasto Total Mensal</p>
+                            <p class="text-black font-bookmania font-normal text-[3.2rem] leading-none"
+                                id="total-monthly-cost">
+                                R$ 0,00
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Toolbar de Ordenação Integrada ao App.tsx visual -->
                 <div>
-                    <label class="text-white/50 text-sm mb-3 block">Ordenar por</label>
+                    <button onclick="toggleView('form')"
+                        class="w-full px-6 py-4 rounded-[24px] bg-black text-white hover:bg-black/90 transition-colors flex items-center justify-center gap-2 font-semibold text-base mb-6">
+                        <i class="fa-solid fa-plus"></i> Nova Assinatura
+                    </button>
+
+                    <label class="text-black/50 text-sm mb-3 block">Ordenar por</label>
                     <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-arrow-up-wide-short text-white/50 w-4 h-4 flex-shrink-0 text-center"></i>
+                        <i class="fa-solid fa-arrow-up-wide-short text-black/50 w-4 h-4 flex-shrink-0 text-center"></i>
                         <div class="relative flex-1 custom-select w-full" data-id="sort-select">
                             <input type="hidden" id="sort-input" value="cost-desc">
                             <button type="button"
-                                class="w-full px-4 py-3 rounded-2xl text-white border border-white/10 transition-colors focus:border-white/30 outline-none flex items-center justify-between select-button focus:ring-0 focus:outline-0 focus:shadow-none"
-                                style="background-color: #080808;">
+                                class="w-full px-4 py-3 rounded-[24px] text-black border border-black/5 transition-colors focus:border-black/20 outline-none flex items-center justify-between select-button focus:ring-0 focus:outline-0 focus:shadow-none"
+                                style="background-color: #F5F5F5;">
                                 <span class="select-label truncate text-left text-sm">Maior Custo Mensal</span>
                                 <i
-                                    class="fa-solid fa-chevron-down text-white/50 text-sm transition-transform duration-200"></i>
+                                    class="fa-solid fa-chevron-down text-black/50 text-sm transition-transform duration-200"></i>
                             </button>
                             <div
-                                class="select-options hidden absolute top-full left-0 right-0 mt-2 rounded-[24px] overflow-hidden border border-white/10 z-50 bg-[#1A1C19] overflow-y-auto w-[220px]">
+                                class="select-options hidden absolute top-full left-0 right-0 mt-2 rounded-[24px] overflow-hidden border border-black/5 z-50 bg-white overflow-y-auto w-[220px] shadow-xl">
                                 <button type="button"
-                                    class="select-option w-full px-5 py-3 text-left transition-all flex items-center justify-between text-[0.9375rem] text-white/70 hover:bg-white/10"
+                                    class="select-option w-full px-5 py-3 text-left transition-all flex items-center justify-between text-[0.9375rem] text-black/70 hover:bg-black/5"
                                     data-value="name-asc">
                                     <span>Ordem Alfabética</span>
                                 </button>
                                 <button type="button"
-                                    class="select-option w-full px-5 py-3 text-left transition-all flex items-center justify-between text-[0.9375rem] text-white border-t border-white/5 font-semibold hover:bg-white/10"
+                                    class="select-option w-full px-5 py-3 text-left transition-all flex items-center justify-between text-[0.9375rem] text-black border-t border-black/5 font-semibold hover:bg-black/5"
                                     data-value="cost-desc">
                                     <span>Maior Custo Mensal</span>
-                                    <i class="fa-solid fa-check ml-2 text-white"></i>
+                                    <i class="fa-solid fa-check ml-2 text-black"></i>
                                 </button>
                                 <button type="button"
-                                    class="select-option w-full px-5 py-3 text-left transition-all flex items-center justify-between text-[0.9375rem] text-white/70 border-t border-white/5 hover:bg-white/10"
+                                    class="select-option w-full px-5 py-3 text-left transition-all flex items-center justify-between text-[0.9375rem] text-black/70 border-t border-black/5 hover:bg-black/5"
                                     data-value="cost-asc">
                                     <span>Menor Custo Mensal</span>
                                 </button>
                                 <button type="button"
-                                    class="select-option w-full px-5 py-3 text-left transition-all flex items-center justify-between text-[0.9375rem] text-white/70 border-t border-white/5 hover:bg-white/10"
+                                    class="select-option w-full px-5 py-3 text-left transition-all flex items-center justify-between text-[0.9375rem] text-black/70 border-t border-black/5 hover:bg-black/5"
                                     data-value="use-desc">
                                     <span>Maior Custo por Uso</span>
                                 </button>
@@ -186,7 +224,7 @@
             <div class="w-full">
                 <div class="w-full p-6 rounded-[24px]" style="background-color: #1A1C19;">
                     <div class="flex items-center justify-between mb-6">
-                        <h2 id="form-title" class="text-white font-cambo text-[1.75rem] font-normal">
+                        <h2 id="form-title" class="text-white font-bookmania text-[1.75rem] font-normal">
                             Nova Assinatura
                         </h2>
                         <button onclick="cancelEdit()"
@@ -440,6 +478,8 @@
             }
         }
 
+        // Intersection Observer (moved to initialization section)
+
         // Estado inicial
         let subscriptions = [
             {
@@ -502,6 +542,7 @@
 
         // Cores pastéis baseadas no App.tsx
         const PASTEL_COLORS = ['#B9CFFE', '#EDE1F5', '#FFE0E1', '#F4EFE6'];
+        const DARK_TEXT_COLORS = ['#091F4D', '#240D33', '#3D0A0C', '#2E2719'];
 
         // Estado da interface
         let editingId = null;
@@ -529,7 +570,7 @@
 
         window.changeSort = (sortValue) => {
             currentSort = sortValue;
-            render();
+            window.renderSubscriptions(); // Call the wrapped renderSubscriptions
         };
 
         // Lógica de Cálculo aprimorada (unificando com uso e período original)
@@ -559,7 +600,7 @@
         };
 
         // Renderizar Lista e Totais
-        const render = () => {
+        const renderSubscriptions = () => {
             const listEl = document.getElementById('subscriptions-list');
             const totalEl = document.getElementById('total-monthly-cost');
 
@@ -604,7 +645,9 @@
 
             // Renderizar cada grupo
             Object.entries(groupedSubs).forEach(([category, subs]) => {
-                const categoryColor = PASTEL_COLORS[categoryIndex % PASTEL_COLORS.length];
+                const colorIndex = categoryIndex % PASTEL_COLORS.length;
+                const categoryColor = PASTEL_COLORS[colorIndex];
+                const textColor = DARK_TEXT_COLORS[colorIndex];
                 categoryIndex++;
 
                 const categoryTotal = subs.reduce((sum, sub) => sum + calculateMetrics(sub).monthlyCost, 0);
@@ -613,14 +656,14 @@
                 // Header da Categoria
                 const categoryHTML = `
                     <div class="flex justify-between items-end mb-3 ml-1">
-                        <h2 class="text-white font-cambo text-2xl font-normal">
+                        <h2 class="text-white font-bookmania text-2xl font-normal">
                             ${category}
                         </h2>
                         <span class="text-white/50 text-sm font-medium mb-1">
                             ${formatCurrency(categoryTotal)}
                         </span>
                     </div>
-                    <div class="space-y-3" id="cat-list-${category.replace(/[^a-zA-Z0-9]/g, '-')}"></div>
+                    <div class="space-y-3" id="cat-list-${category.replace(/[^a-zA-Z0-9]/g, '-')}" style="margin-bottom: 12px;"></div>
                 `;
                 categorySection.innerHTML = categoryHTML;
                 listEl.appendChild(categorySection);
@@ -630,9 +673,12 @@
                 // Cartões de Assinatura
                 subs.forEach((sub) => {
                     const metrics = calculateMetrics(sub);
+                    // Contêiner principal do Card
                     const card = document.createElement('div');
-                    card.className = "relative p-5 rounded-[24px] transition-transform active:scale-[0.98]";
+                    card.className = `relative p-5 rounded-[32px] mb-3 flex flex-col justify-between scroll-reveal transition-transform active:scale-[0.98]`;
                     card.style.backgroundColor = categoryColor;
+                    card.style.color = textColor;
+                    card.style.minHeight = '140px';
 
                     // Ajuste de apresentação de custo de uso e vezes (igual ao react App.tsx)
                     let usageHtml = '';
@@ -640,12 +686,12 @@
                         const usageLabel = usagePeriodLabels[sub.usagePeriod] || 'no período';
                         usageHtml = `
                             <div class="flex justify-between items-baseline gap-2">
-                                <span style="color: #1A1C19; opacity: 0.7; font-size: 0.8125rem;">Uso:</span>
-                                <span style="color: #1A1C19; font-weight: 500; font-size: 0.9375rem;">${sub.usageCount}x ${usageLabel}</span>
+                                <span style="color: ${textColor}; opacity: 0.7; font-size: 0.8125rem;">Uso:</span>
+                                <span style="color: ${textColor}; font-weight: 500; font-size: 0.9375rem;">${sub.usageCount}x ${usageLabel}</span>
                             </div>
                             <div class="flex justify-between items-baseline gap-2 pt-2 border-t border-black/10">
-                                <span style="color: #1A1C19; opacity: 0.7; font-size: 0.8125rem;">Custo por Uso:</span>
-                                <span style="color: #1A1C19; font-weight: 600; font-size: 1.125rem;">${formatCurrency(metrics.costPerUse)}</span>
+                                <span style="color: ${textColor}; opacity: 0.7; font-size: 0.8125rem;">Custo por Uso:</span>
+                                <span style="color: ${textColor}; font-weight: 600; font-size: 1.125rem;">${formatCurrency(metrics.costPerUse)}</span>
                             </div>
                         `;
                     }
@@ -653,28 +699,28 @@
                     card.innerHTML = `
                         <!-- Action Buttons -->
                         <div class="absolute top-3 right-3 flex gap-2">
-                            <button onclick="editSubscription(${sub.id})" class="w-9 h-9 rounded-full bg-black/10 active:bg-black/20 flex items-center justify-center transition-colors" style="color: #1A1C19;">
+                            <button onclick="editSubscription(${sub.id})" class="w-9 h-9 rounded-full bg-black/10 active:bg-black/20 flex items-center justify-center transition-colors" style="color: ${textColor};">
                                 <i class="fa-solid fa-pen text-sm"></i>
                             </button>
-                            <button onclick="deleteSubscription(${sub.id})" class="w-9 h-9 rounded-full bg-black/10 active:bg-black/20 flex items-center justify-center transition-colors" style="color: #1A1C19;">
+                            <button onclick="deleteSubscription(${sub.id})" class="w-9 h-9 rounded-full bg-black/10 active:bg-black/20 flex items-center justify-center transition-colors" style="color: ${textColor};">
                                 <i class="fa-solid fa-trash text-sm"></i>
                             </button>
                         </div>
 
                         <!-- Content -->
                         <div class="pr-24">
-                <h3 class="mb-3 font-cambo" style="color: #1A1C19; font-size: 1.375rem; font-weight: 400; line-height: 1.3;">
+                        <h3 class="mb-3 font-bookmania" style="color: ${textColor}; font-size: 1.375rem; font-weight: 400; line-height: 1.3;">
                     ${sub.name}
                 </h3>
 
                 <div class="space-y-2">
                     <div class="flex justify-between items-baseline gap-2">
-                        <span style="color: #1A1C19; opacity: 0.7; font-size: 0.8125rem;">Custo Original:</span>
-                        <span style="color: #1A1C19; font-weight: 500; font-size: 0.9375rem;">${formatCurrency(sub.price)}${periodTranslations[sub.period]}</span>
+                        <span style="color: ${textColor}; opacity: 0.7; font-size: 0.8125rem;">Custo Original:</span>
+                        <span style="color: ${textColor}; font-weight: 500; font-size: 0.9375rem;">${formatCurrency(sub.price)}${periodTranslations[sub.period]}</span>
                     </div>
                     <div class="flex justify-between items-baseline gap-2">
-                        <span style="color: #1A1C19; opacity: 0.7; font-size: 0.8125rem;">Custo Mensal:</span>
-                        <span style="color: #1A1C19; font-weight: 600; font-size: 1.125rem;">${formatCurrency(metrics.monthlyCost)}</span>
+                        <span style="color: ${textColor}; opacity: 0.7; font-size: 0.8125rem;">Custo Mensal:</span>
+                        <span style="color: ${textColor}; font-weight: 600; font-size: 1.125rem;">${formatCurrency(metrics.monthlyCost)}</span>
                     </div>
                     ${usageHtml}
                 </div>
@@ -784,28 +830,52 @@
             if (confirm('Tem certeza que deseja remover esta assinatura?')) {
                 subscriptions = subscriptions.filter(sub => sub.id !== id);
                 if (editingId === id) cancelEdit();
-                render();
+                window.renderSubscriptions(); // Changed render() to window.renderSubscriptions()
             }
         };
 
-        // Inicialização
+
+        // --- Initialization & Interactions ---
+
+        // MutationObserver to reveal cards as they are added to the list
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        const observeCards = () => {
+            document.querySelectorAll('.scroll-reveal').forEach(card => observer.observe(card));
+        };
+
+        // Wrap renderSubscriptions to trigger observer
+        const baseRender = renderSubscriptions;
+        window.renderSubscriptions = () => {
+            baseRender();
+            observeCards();
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
-            // Setup dropdown behavior
             setupCustomDropdowns();
 
-            // Link existing changeSort behavior to the custom select hidden input
-            document.getElementById('sort-input').addEventListener('change', (e) => {
-                changeSort(e.target.value);
-            });
+            // Setup sort input change
+            const sortInput = document.getElementById('sort-input');
+            if (sortInput) {
+                sortInput.addEventListener('change', (e) => {
+                    window.changeSort(e.target.value);
+                });
+            }
 
-            // Forçar selects para valor padrão no recarregamento para prevenir visualização cacheada com CSS bugado
+            // Default values
             setDropdownValue('sub-category', "Streamings");
             setDropdownValue('sub-period', "monthly");
             setDropdownValue('sort-input', "cost-desc");
 
-            render();
+            // Initial render
+            window.renderSubscriptions();
         });
-
     </script>
 </body>
 

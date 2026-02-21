@@ -24,3 +24,10 @@ export const PASTEL_COLORS = [
   '#FFE0E1', // Rosa
   '#F4EFE6'  // Bege
 ] as const;
+
+export const DARK_TEXT_COLORS = [
+  '#091F4D', // Azul Escuro
+  '#240D33', // Roxo Escuro
+  '#3D0A0C', // Rosa Escuro
+  '#2E2719'  // Bege Escuro
+] as const;

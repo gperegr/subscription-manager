@@ -44,14 +44,14 @@ export function SubscriptionForm({ subscription, onSubmit, onCancel }: Subscript
   return (
     <div className="min-h-screen flex items-start" style={{ backgroundColor: '#000000' }}>
       <div className="w-full max-w-md mx-auto px-4 py-6">
-        <div 
+        <div
           className="w-full p-6 rounded-[24px]"
           style={{ backgroundColor: '#1A1C19' }}
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 
+            <h2
               className="text-white"
-              style={{ fontFamily: 'Cambo, serif', fontSize: '1.75rem', fontWeight: 400 }}
+              style={{ fontFamily: 'Bookmania, serif', fontSize: '1.75rem', fontWeight: 400 }}
             >
               {subscription ? 'Editar Assinatura' : 'Nova Assinatura'}
             </h2>
@@ -63,7 +63,7 @@ export function SubscriptionForm({ subscription, onSubmit, onCancel }: Subscript
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5" style={{ fontFamily: 'Inter, sans-serif' }}>
+          <form onSubmit={handleSubmit} className="space-y-5" style={{ fontFamily: 'Boston, sans-serif' }}>
             <div>
               <label className="block text-white/70 mb-2 text-sm">Nome do Serviço</label>
               <input
@@ -138,7 +138,7 @@ export function SubscriptionForm({ subscription, onSubmit, onCancel }: Subscript
               <button
                 type="submit"
                 className="w-full py-3 rounded-full bg-white text-black active:bg-white/90 transition-colors"
-                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
+                style={{ fontFamily: 'Boston, sans-serif', fontWeight: 600 }}
               >
                 {subscription ? 'Salvar Alterações' : 'Adicionar Assinatura'}
               </button>
@@ -146,7 +146,7 @@ export function SubscriptionForm({ subscription, onSubmit, onCancel }: Subscript
                 type="button"
                 onClick={onCancel}
                 className="w-full py-3 rounded-full bg-white/10 text-white active:bg-white/20 transition-colors"
-                style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
+                style={{ fontFamily: 'Boston, sans-serif', fontWeight: 600 }}
               >
                 Cancelar
               </button>

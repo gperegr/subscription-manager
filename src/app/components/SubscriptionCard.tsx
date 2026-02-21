@@ -5,16 +5,17 @@ import { getMonthlyCost, getCostPerUsage, formatCurrency, getPeriodLabel } from 
 interface SubscriptionCardProps {
   subscription: Subscription;
   color: string;
+  textColor: string;
   onEdit: (subscription: Subscription) => void;
   onDelete: (id: string) => void;
 }
 
-export function SubscriptionCard({ subscription, color, onEdit, onDelete }: SubscriptionCardProps) {
+export function SubscriptionCard({ subscription, color, textColor, onEdit, onDelete }: SubscriptionCardProps) {
   const monthlyCost = getMonthlyCost(subscription);
   const costPerUsage = getCostPerUsage(subscription);
 
   return (
-    <div 
+    <div
       className="relative p-5 rounded-[24px] transition-transform active:scale-[0.98]"
       style={{ backgroundColor: color }}
     >
@@ -23,14 +24,14 @@ export function SubscriptionCard({ subscription, color, onEdit, onDelete }: Subs
         <button
           onClick={() => onEdit(subscription)}
           className="w-9 h-9 rounded-full bg-black/10 active:bg-black/20 flex items-center justify-center transition-colors"
-          style={{ color: '#1A1C19' }}
+          style={{ color: textColor }}
         >
           <Pencil className="w-4 h-4" />
         </button>
         <button
           onClick={() => onDelete(subscription.id)}
           className="w-9 h-9 rounded-full bg-black/10 active:bg-black/20 flex items-center justify-center transition-colors"
-          style={{ color: '#1A1C19' }}
+          style={{ color: textColor }}
         >
           <Trash2 className="w-4 h-4" />
         </button>
@@ -38,11 +39,11 @@ export function SubscriptionCard({ subscription, color, onEdit, onDelete }: Subs
 
       {/* Content */}
       <div className="pr-24">
-        <h3 
+        <h3
           className="mb-3"
-          style={{ 
-            color: '#1A1C19',
-            fontFamily: 'Cambo, serif',
+          style={{
+            color: textColor,
+            fontFamily: 'Bookmania, serif',
             fontSize: '1.375rem',
             fontWeight: 400,
             lineHeight: 1.3
@@ -51,21 +52,21 @@ export function SubscriptionCard({ subscription, color, onEdit, onDelete }: Subs
           {subscription.name}
         </h3>
 
-        <div className="space-y-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+        <div className="space-y-2" style={{ fontFamily: 'Boston, sans-serif' }}>
           <div className="flex justify-between items-baseline gap-2">
-            <span style={{ color: '#1A1C19', opacity: 0.7, fontSize: '0.8125rem' }}>
+            <span style={{ color: textColor, opacity: 0.7, fontSize: '0.8125rem' }}>
               Custo Original:
             </span>
-            <span style={{ color: '#1A1C19', fontWeight: 500, fontSize: '0.9375rem' }}>
+            <span style={{ color: textColor, fontWeight: 500, fontSize: '0.9375rem' }}>
               {formatCurrency(subscription.cost)}{getPeriodLabel(subscription.period)}
             </span>
           </div>
 
           <div className="flex justify-between items-baseline gap-2">
-            <span style={{ color: '#1A1C19', opacity: 0.7, fontSize: '0.8125rem' }}>
+            <span style={{ color: textColor, opacity: 0.7, fontSize: '0.8125rem' }}>
               Custo Mensal:
             </span>
-            <span style={{ color: '#1A1C19', fontWeight: 600, fontSize: '1.125rem' }}>
+            <span style={{ color: textColor, fontWeight: 600, fontSize: '1.125rem' }}>
               {formatCurrency(monthlyCost)}
             </span>
           </div>
@@ -73,19 +74,19 @@ export function SubscriptionCard({ subscription, color, onEdit, onDelete }: Subs
           {subscription.usagePerPeriod > 0 && (
             <>
               <div className="flex justify-between items-baseline gap-2">
-                <span style={{ color: '#1A1C19', opacity: 0.7, fontSize: '0.8125rem' }}>
+                <span style={{ color: textColor, opacity: 0.7, fontSize: '0.8125rem' }}>
                   Uso no período:
                 </span>
-                <span style={{ color: '#1A1C19', fontWeight: 500, fontSize: '0.9375rem' }}>
+                <span style={{ color: textColor, fontWeight: 500, fontSize: '0.9375rem' }}>
                   {subscription.usagePerPeriod}x
                 </span>
               </div>
 
               <div className="flex justify-between items-baseline gap-2 pt-2 border-t border-black/10">
-                <span style={{ color: '#1A1C19', opacity: 0.7, fontSize: '0.8125rem' }}>
+                <span style={{ color: textColor, opacity: 0.7, fontSize: '0.8125rem' }}>
                   Custo por Uso:
                 </span>
-                <span style={{ color: '#1A1C19', fontWeight: 600, fontSize: '1.125rem' }}>
+                <span style={{ color: textColor, fontWeight: 600, fontSize: '1.125rem' }}>
                   {formatCurrency(costPerUsage)}
                 </span>
               </div>

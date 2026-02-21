@@ -2,22 +2,22 @@
 
 :root {
   --font-size: 16px;
-  
-  /* Cambo App Design System Colors */
+
+  /* Bookmania App Design System Colors */
   --background: #000000;
   --foreground: #FFFFFF;
   --panel-dark: #1A1C19;
   --input-dark: #080808;
-  
+
   /* Pastel Card Colors */
   --pastel-blue: #B9CFFE;
   --pastel-purple: #EDE1F5;
   --pastel-pink: #FFE0E1;
   --pastel-beige: #F4EFE6;
-  
+
   /* Text on pastel */
   --text-on-pastel: #1A1C19;
-  
+
   /* Original variables for compatibility */
   --card: #ffffff;
   --card-foreground: oklch(0.145 0 0);
@@ -141,7 +141,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Boston', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 
   /**
@@ -157,21 +157,21 @@
     font-size: var(--text-2xl);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
-    font-family: 'Cambo', serif;
+    font-family: 'Bookmania', serif;
   }
 
   h2 {
     font-size: var(--text-xl);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
-    font-family: 'Cambo', serif;
+    font-family: 'Bookmania', serif;
   }
 
   h3 {
     font-size: var(--text-lg);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
-    font-family: 'Cambo', serif;
+    font-family: 'Bookmania', serif;
   }
 
   h4 {
