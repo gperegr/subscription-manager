@@ -1,0 +1,193 @@
+/* Animações de Transição de Tela mantidas */
+.anim-enter {
+    animation: fadeScaleIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.anim-exit {
+    animation: fadeScaleOut 0.3s ease-in forwards;
+}
+
+@keyframes fadeScaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes fadeScaleOut {
+    from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.98) translateY(-10px);
+    }
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-4px);
+    }
+
+    75% {
+        transform: translateX(4px);
+    }
+}
+
+/* Estilo de Erro de Validação atualizado pro design dark */
+.input-error {
+    box-shadow: 0 0 0 2px #d4183d !important;
+    animation: shake 0.3s ease-in-out;
+}
+
+/* Removendo setas de number input */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+body {
+    background-color: #000000;
+    color: #FFFFFF;
+    font-family: 'Boston', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+.font-bookmania {
+    font-family: 'Bookmania', serif;
+}
+
+/* Custom Select Styles */
+.select-options {
+    animation: slideDown 0.2s ease-out;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    max-height: 280px;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes morph {
+    0% {
+        border-radius: 60% 40% 30% 70%/60% 30% 70% 40%;
+    }
+
+    50% {
+        border-radius: 30% 60% 70% 40%/50% 60% 30% 60%;
+    }
+
+    100% {
+        border-radius: 60% 40% 30% 70%/60% 30% 70% 40%;
+    }
+}
+
+.plasma-blob {
+    width: 340px;
+    height: 340px;
+    background-color: #B9CFFE;
+    animation: morph 12s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Elastic Scroll Effect */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Swipe Actions */
+.swipe-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 32px;
+    margin-bottom: 12px;
+}
+
+.swipe-actions {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 32px;
+    background: #000;
+    z-index: 0;
+}
+
+.swipe-action-left,
+.swipe-action-right {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.swipe-action-left {
+    justify-content: flex-start;
+    background-color: #10b981;
+    /* Emerald 500 for Edit */
+    border-top-left-radius: 32px;
+    border-bottom-left-radius: 32px;
+}
+
+.swipe-action-right {
+    justify-content: flex-end;
+    background-color: #ef4444;
+    /* Red 500 for Delete */
+    border-top-right-radius: 32px;
+    border-bottom-right-radius: 32px;
+}
+
+.swipe-content {
+    position: relative;
+    z-index: 1;
+    transition: transform 0.2s ease-out;
+    background-color: inherit;
+    border-radius: 32px;
+    width: 100%;
+    height: 100%;
+    touch-action: pan-y;
+    /* Allow vertical scrolling, intercept horizontal */
+    user-select: none;
+}
+
+.swipe-content.swiping {
+    transition: none;
+}
