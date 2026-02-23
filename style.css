@@ -65,6 +65,8 @@ body {
     color: #FFFFFF;
     font-family: 'Boston', sans-serif;
     -webkit-font-smoothing: antialiased;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 .font-bookmania {

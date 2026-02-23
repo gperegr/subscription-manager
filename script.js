@@ -153,6 +153,7 @@ function setDropdownValue(dropdownId, value) {
 // Estado inicial
 // Constante para o LocalStorage
 const STORAGE_KEY = '@subscription-manager:subs';
+const SORT_KEY = '@subscription-manager:sort';
 
 // Dados iniciais padrão (usados apenas na primeira vez)
 const defaultSubscriptions = [
@@ -228,7 +229,7 @@ const DARK_TEXT_COLORS = ['#091F4D', '#240D33', '#3D0A0C', '#2E2719'];
 
 // Estado da interface
 let editingId = null;
-let currentSort = 'cost-desc';
+let currentSort = localStorage.getItem(SORT_KEY) || 'cost-desc';
 
 // Gerenciamento de Telas
 window.toggleView = (viewName) => {
@@ -252,6 +253,7 @@ window.toggleView = (viewName) => {
 
 window.changeSort = (sortValue) => {
     currentSort = sortValue;
+    localStorage.setItem(SORT_KEY, sortValue);
     window.renderSubscriptions(); // Call the wrapped renderSubscriptions
 };
 
@@ -676,7 +678,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Default values
     setDropdownValue('sub-category', "Streamings");
     setDropdownValue('sub-period', "monthly");
-    setDropdownValue('sort-input', "cost-desc");
+    setDropdownValue('sort-input', currentSort);
 
     // Initial render
     window.renderSubscriptions();
