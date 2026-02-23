@@ -160,7 +160,7 @@ function setPlanType(value) {
 function toggleMembersInput(type) {
     const container = document.getElementById('members-container');
     const input = document.getElementById('sub-members');
-    
+
     if (type === 'family') {
         container.classList.add('open');
         input.setAttribute('required', 'true');
@@ -233,14 +233,14 @@ function setupNumericValidation() {
 
 function setupCurrencyMask() {
     const input = document.getElementById('sub-price');
-    
+
     input.addEventListener('input', (e) => {
         let value = e.target.value.replace(/\D/g, '');
         if (value === '') {
             e.target.value = '';
             return;
         }
-        
+
         const floatValue = parseFloat(value) / 100;
         e.target.value = floatValue.toLocaleString('pt-BR', {
             style: 'currency',
@@ -309,7 +309,7 @@ function setupNameAutocomplete() {
             return;
         }
 
-        const matches = knownServices.filter(service => 
+        const matches = knownServices.filter(service =>
             service.name.toLowerCase().includes(value)
         );
 
@@ -322,11 +322,11 @@ function setupNameAutocomplete() {
                     <i class="${service.icon} w-5 text-center"></i>
                     <span>${service.name}</span>
                 `;
-                
+
                 div.addEventListener('click', () => {
                     input.value = service.name;
                     suggestionsBox.classList.add('hidden');
-                    
+
                     // Auto-select category if valid
                     if (service.category) {
                         setDropdownValue('sub-category', service.category);
@@ -895,10 +895,10 @@ const renderSubscriptions = () => {
             let usageHtml = '';
             if (sub.usageCount > 0) {
                 const usageLabel = usagePeriodLabels[sub.usagePeriod] || 'no período';
-                
+
                 // Ajusta o rótulo se for cálculo familiar
-                const costPerUseLabel = (sub.type === 'family' && sub.members > 1) 
-                    ? 'Custo/Uso (Pessoa):' 
+                const costPerUseLabel = (sub.type === 'family' && sub.members > 1)
+                    ? 'Custo/Uso (Pessoa):'
                     : 'Custo por Uso:';
 
                 usageHtml = `
@@ -1249,6 +1249,82 @@ window.renderSubscriptions = () => {
     observeCards();
 };
 
+let lastScrollY = window.scrollY;
+let scrollVelocity = 0;
+let isScrolling = false;
+let scrollTimeout;
+
+const applyElasticScroll = () => {
+    const cards = document.querySelectorAll('.swipe-container');
+
+    // Smooth out velocity decay (more inertia = closer to 1.0)
+    scrollVelocity *= 0.94; // changed from 0.9 to 0.94 for smoother stop
+
+    cards.forEach(card => {
+        // Skip animating cards that are currently being swiped horizontally
+        if (card.querySelector('.swiping')) {
+            card.style.transform = 'translateY(0) scale(1)';
+            return;
+        }
+
+        const rect = card.getBoundingClientRect();
+        const cardCenterY = rect.top + (rect.height / 2);
+        const windowCenterY = window.innerHeight / 2;
+
+        // Distance from center (-1 to 1)
+        let normalizedDist = (cardCenterY - windowCenterY) / windowCenterY;
+
+        // Intensity of the stretch based on absolute velocity
+        const maxStretch = 20; // decreased peak jumpines
+        const velocityFactor = Math.min(Math.abs(scrollVelocity * 0.05), 1); // Decreased multiplier from 0.1 to 0.05
+
+        // Calculate elastic transform
+        const translateY = maxStretch * velocityFactor * normalizedDist;
+
+        // Scale down slightly when moving fast
+        const scale = 1 - Math.abs(velocityFactor * 0.015);
+
+        card.style.transform = `translateY(${translateY}px) scale(${scale})`;
+
+        // Use a smoother spring-like curve for the transform reset
+        card.style.transition = isScrolling ? 'transform 0.1s linear' : 'transform 0.8s cubic-bezier(0.1, 0.9, 0.2, 1)';
+    });
+
+    // Keep animating until velocity is very low
+    if (Math.abs(scrollVelocity) > 0.5 || isScrolling) {
+        requestAnimationFrame(applyElasticScroll);
+    } else {
+        // Snap back when stopped
+        cards.forEach(card => {
+            if (!card.querySelector('.swiping')) {
+                card.style.transform = 'translateY(0) scale(1)';
+            }
+        });
+    }
+};
+
+const setupElasticScroll = () => {
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+
+        // Calculate immediate velocity, add to existing to build momentum smoothly
+        const delta = currentScrollY - lastScrollY;
+        scrollVelocity = (scrollVelocity + delta) * 0.5; // Average it out to avoid sudden spikes
+
+        lastScrollY = currentScrollY;
+
+        if (!isScrolling) {
+            isScrolling = true;
+            applyElasticScroll();
+        }
+
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            isScrolling = false;
+        }, 80); // Increased timeout slightly to wait for scroll to truly stop
+    }, { passive: true });
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     setupCustomDropdowns();
     setupPlanTypeToggle();
@@ -1257,6 +1333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupNameAutocomplete();
     setupFormPullDownBackGesture();
     setupOverviewSlider();
+    setupElasticScroll();
 
     // Setup sort input change
     const sortInput = document.getElementById('sort-input');
