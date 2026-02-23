@@ -8,6 +8,19 @@ function setupCustomDropdowns() {
         const hiddenInput = dropdown.querySelector('input[type="hidden"]');
         const arrow = button.querySelector('.fa-chevron-down');
 
+        const isSortSelect = dropdown.dataset.id === 'sort-select';
+
+        // Fix: Ensure dropdown styles are correct
+        if (isSortSelect) {
+            optionsMenu.style.backgroundColor = '#F5F5F5';
+            optionsMenu.style.border = '1px solid rgba(0, 0, 0, 0.05)';
+        } else {
+            optionsMenu.style.backgroundColor = '#1A1C19';
+            optionsMenu.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+        }
+        optionsMenu.style.width = '100%';
+        optionsMenu.style.zIndex = '100';
+
         // Toggle menu
         button.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -15,12 +28,23 @@ function setupCustomDropdowns() {
 
             // Close all others
             document.querySelectorAll('.select-options').forEach(menu => menu.classList.add('hidden'));
-            document.querySelectorAll('.select-button').forEach(btn => btn.style.borderColor = 'rgba(255, 255, 255, 0.1)');
+            document.querySelectorAll('.select-button').forEach(btn => {
+                const p = btn.closest('.custom-select');
+                if (p && p.dataset.id === 'sort-select') {
+                    btn.style.borderColor = 'rgba(0, 0, 0, 0.05)';
+                } else {
+                    btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                }
+            });
             document.querySelectorAll('.fa-chevron-down').forEach(icon => icon.style.transform = 'rotate(0deg)');
 
             if (!isOpen) {
                 optionsMenu.classList.remove('hidden');
-                button.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                if (isSortSelect) {
+                    button.style.borderColor = 'rgba(0, 0, 0, 0.2)';
+                } else {
+                    button.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                }
                 arrow.style.transform = 'rotate(180deg)';
             }
         });
@@ -34,15 +58,24 @@ function setupCustomDropdowns() {
 
                 // Handle styles
                 options.forEach(opt => {
-                    opt.style.color = 'rgba(255, 255, 255, 0.7)';
+                    if (isSortSelect) {
+                        opt.style.color = 'rgba(0, 0, 0, 0.6)';
+                    } else {
+                        opt.style.color = 'rgba(255, 255, 255, 0.7)';
+                    }
                     opt.classList.remove('font-semibold');
                     const check = opt.querySelector('.fa-check');
                     if (check) check.remove();
                 });
 
-                option.style.color = '#FFFFFF';
+                if (isSortSelect) {
+                    option.style.color = '#000000';
+                    option.innerHTML += ' <i class="fa-solid fa-check ml-2 text-black"></i>';
+                } else {
+                    option.style.color = '#FFFFFF';
+                    option.innerHTML += ' <i class="fa-solid fa-check ml-2 text-white"></i>';
+                }
                 option.classList.add('font-semibold');
-                option.innerHTML += ' <i class="fa-solid fa-check ml-2 text-white"></i>';
 
                 // Update value
                 hiddenInput.value = option.dataset.value;
@@ -53,7 +86,11 @@ function setupCustomDropdowns() {
 
                 // Close dropdown
                 optionsMenu.classList.add('hidden');
-                button.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                if (isSortSelect) {
+                    button.style.borderColor = 'rgba(0, 0, 0, 0.05)';
+                } else {
+                    button.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                }
                 arrow.style.transform = 'rotate(0deg)';
             });
         });
@@ -62,7 +99,14 @@ function setupCustomDropdowns() {
     // Close dropdowns when clicking outside
     document.addEventListener('click', () => {
         document.querySelectorAll('.select-options').forEach(menu => menu.classList.add('hidden'));
-        document.querySelectorAll('.select-button').forEach(btn => btn.style.borderColor = 'rgba(255, 255, 255, 0.1)');
+        document.querySelectorAll('.select-button').forEach(btn => {
+            const p = btn.closest('.custom-select');
+            if (p && p.dataset.id === 'sort-select') {
+                btn.style.borderColor = 'rgba(0, 0, 0, 0.05)';
+            } else {
+                btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            }
+        });
         document.querySelectorAll('.fa-chevron-down').forEach(icon => icon.style.transform = 'rotate(0deg)');
     });
 }
@@ -74,6 +118,7 @@ function setDropdownValue(dropdownId, value) {
     if (!dropdown) return;
     const options = dropdown.querySelectorAll('.select-option');
     const label = dropdown.querySelector('.select-label');
+    const isSortSelect = dropdown.dataset.id === 'sort-select';
 
     const optionToSelect = Array.from(options).find(opt => opt.dataset.value === value) || options[0];
 
@@ -82,15 +127,24 @@ function setDropdownValue(dropdownId, value) {
         label.textContent = optionToSelect.querySelector('span').textContent.trim();
 
         options.forEach(opt => {
-            opt.style.color = 'rgba(255, 255, 255, 0.7)';
+            if (isSortSelect) {
+                opt.style.color = 'rgba(0, 0, 0, 0.6)';
+            } else {
+                opt.style.color = 'rgba(255, 255, 255, 0.7)';
+            }
             opt.classList.remove('font-semibold');
             const check = opt.querySelector('.fa-check');
             if (check) check.remove();
         });
 
-        optionToSelect.style.color = '#FFFFFF';
+        if (isSortSelect) {
+            optionToSelect.style.color = '#000000';
+            optionToSelect.innerHTML += ' <i class="fa-solid fa-check ml-2 text-black"></i>';
+        } else {
+            optionToSelect.style.color = '#FFFFFF';
+            optionToSelect.innerHTML += ' <i class="fa-solid fa-check ml-2 text-white"></i>';
+        }
         optionToSelect.classList.add('font-semibold');
-        optionToSelect.innerHTML += ' <i class="fa-solid fa-check ml-2 text-white"></i>';
 
         hiddenInput.value = optionToSelect.dataset.value;
     }
@@ -404,6 +458,22 @@ const renderSubscriptions = () => {
                     const translateVal = currentX * resistance;
 
                     swipeContent.style.transform = `translateX(${translateVal}px)`;
+
+                    // Opacity Logic
+                    const progress = Math.min(Math.abs(translateVal) / threshold, 1);
+                    const activeOpacity = 0.3 + (0.7 * progress);
+                    const inactiveOpacity = 0.3 - (0.3 * progress);
+
+                    const leftIcon = cardContainer.querySelector('.swipe-action-left i');
+                    const rightIcon = cardContainer.querySelector('.swipe-action-right i');
+
+                    if (translateVal > 0 && leftIcon) {
+                        leftIcon.style.opacity = activeOpacity;
+                        if (rightIcon) rightIcon.style.opacity = inactiveOpacity;
+                    } else if (translateVal < 0 && rightIcon) {
+                        rightIcon.style.opacity = activeOpacity;
+                        if (leftIcon) leftIcon.style.opacity = inactiveOpacity;
+                    }
                 } else if (Math.abs(deltaY) > 10) {
                     // Let the browser scroll and cancel our swipe Drag
                     isDragging = false;
@@ -417,6 +487,9 @@ const renderSubscriptions = () => {
                 if (!isDragging) return;
                 isDragging = false;
                 swipeContent.classList.remove('swiping');
+
+                // Reset icon opacity
+                cardContainer.querySelectorAll('.swipe-actions i').forEach(i => i.style.opacity = '');
 
                 if (e.pointerId) swipeContent.releasePointerCapture(e.pointerId);
 

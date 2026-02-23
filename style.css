@@ -161,18 +161,22 @@ body {
 
 .swipe-action-left {
     justify-content: flex-start;
-    background-color: #10b981;
-    /* Emerald 500 for Edit */
+    background-color: transparent;
     border-top-left-radius: 32px;
     border-bottom-left-radius: 32px;
 }
 
 .swipe-action-right {
     justify-content: flex-end;
-    background-color: #ef4444;
-    /* Red 500 for Delete */
+    background-color: transparent;
     border-top-right-radius: 32px;
     border-bottom-right-radius: 32px;
+}
+
+.swipe-action-left i,
+.swipe-action-right i {
+    opacity: 0.3;
+    transition: opacity 0.2s;
 }
 
 .swipe-content {
