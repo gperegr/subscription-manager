@@ -130,21 +130,6 @@ body {
     justify-content: center;
 }
 
-.overview-stage::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0.36) 0%,
-        rgba(255, 255, 255, 0) 14%,
-        rgba(255, 255, 255, 0) 86%,
-        rgba(255, 255, 255, 0.36) 100%
-    );
-}
-
 .overview-stage .plasma-blob {
     position: absolute;
     inset: 0;
@@ -390,7 +375,8 @@ body {
 .slide-down-container.open {
     max-height: 100px;
     opacity: 1;
-    margin-top: 0.75rem; /* equivalent to gap-3 */
+    margin-top: 0.75rem;
+    /* equivalent to gap-3 */
 }
 
 .usage-indicator {
