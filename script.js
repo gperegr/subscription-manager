@@ -256,7 +256,7 @@ const parseCurrencyInput = (value) => {
 
 // Autocomplete Logic
 const knownServices = [
-    { name: 'Netflix', category: 'Streamings', icon: 'fa-solid fa-film' },
+    { name: 'Netflix', category: 'Streamings', icon: 'fa-brands fa-netflix' },
     { name: 'Spotify', category: 'Streamings', icon: 'fa-brands fa-spotify' },
     { name: 'Deezer', category: 'Streamings', icon: 'fa-brands fa-deezer' },
     { name: 'Apple Music', category: 'Streamings', icon: 'fa-brands fa-apple' },
@@ -268,7 +268,7 @@ const knownServices = [
     { name: 'Microsoft 365', category: 'Softwares', icon: 'fa-brands fa-microsoft' },
     { name: 'Xbox Game Pass', category: 'Streamings', icon: 'fa-brands fa-xbox' },
     { name: 'Nintendo Switch Online', category: 'Streamings', icon: 'fa-brands fa-nintendo-switch' },
-    { name: 'Adobe Creative Cloud', category: 'Softwares', icon: 'fa-solid fa-palette' },
+    { name: 'Adobe Creative Cloud', category: 'Softwares', icon: 'fa-brands fa-adobe' },
     { name: 'Dropbox', category: 'Softwares', icon: 'fa-brands fa-dropbox' },
     { name: 'PlayStation Plus', category: 'Streamings', icon: 'fa-brands fa-playstation' },
     { name: 'Steam', category: 'Streamings', icon: 'fa-brands fa-steam' },
@@ -278,7 +278,7 @@ const knownServices = [
     { name: 'Canva', category: 'Softwares', icon: 'fa-brands fa-canva' },
     { name: 'Slack', category: 'Softwares', icon: 'fa-brands fa-slack' },
     { name: 'Discord Nitro', category: 'Softwares', icon: 'fa-brands fa-discord' },
-    { name: 'Disney+', category: 'Streamings', icon: 'fa-solid fa-wand-magic-sparkles' },
+    { name: 'Disney+', category: 'Streamings', icon: 'fa-brands fa-disney' },
     { name: 'HBO Max', category: 'Streamings', icon: 'fa-solid fa-tv' },
     { name: 'Paramount+', category: 'Streamings', icon: 'fa-solid fa-tv' },
     { name: 'Globoplay', category: 'Streamings', icon: 'fa-solid fa-play' },
@@ -346,6 +346,94 @@ function setupNameAutocomplete() {
             suggestionsBox.classList.add('hidden');
         }
     });
+}
+
+function setupFormPullDownBackGesture() {
+    const formView = document.getElementById('form-view');
+    if (!formView) return;
+
+    const card = formView.querySelector('.w-full.p-6.rounded-\\[24px\\]');
+    if (!card) return;
+
+    let startY = 0;
+    let startX = 0;
+    let currentY = 0;
+    let isTracking = false;
+    let isVerticalGesture = false;
+    const threshold = 95;
+    const maxPull = 160;
+    const interactiveSelector = 'input, button, select, textarea, .select-options, .select-option';
+
+    const resetCard = () => {
+        card.classList.remove('swiping');
+        card.style.transition = 'transform 180ms ease, opacity 180ms ease';
+        card.style.transform = 'translateY(0)';
+        card.style.opacity = '1';
+    };
+
+    const onStart = (e) => {
+        if (formView.classList.contains('hidden')) return;
+        if (e.target.closest(interactiveSelector)) return;
+
+        const point = e.type.includes('touch') ? e.touches[0] : e;
+        startY = point.clientY;
+        startX = point.clientX;
+        currentY = 0;
+        isTracking = true;
+        isVerticalGesture = false;
+        card.style.transition = 'none';
+    };
+
+    const onMove = (e) => {
+        if (!isTracking) return;
+
+        const point = e.type.includes('touch') ? e.touches[0] : e;
+        const deltaY = point.clientY - startY;
+        const deltaX = point.clientX - startX;
+
+        if (deltaY <= 0) return;
+
+        if (!isVerticalGesture) {
+            if (Math.abs(deltaY) < 8) return;
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                isTracking = false;
+                resetCard();
+                return;
+            }
+            isVerticalGesture = true;
+        }
+
+        if (window.scrollY > 0) return;
+
+        if (e.cancelable) e.preventDefault();
+
+        const resistedPull = Math.min(deltaY * 0.6, maxPull);
+        currentY = resistedPull;
+        card.style.transform = `translateY(${resistedPull}px)`;
+        card.style.opacity = `${Math.max(0.7, 1 - (resistedPull / 500))}`;
+    };
+
+    const onEnd = () => {
+        if (!isTracking) return;
+        isTracking = false;
+
+        if (currentY >= threshold) {
+            resetCard();
+            window.cancelEdit();
+            return;
+        }
+
+        resetCard();
+    };
+
+    card.addEventListener('touchstart', onStart, { passive: true });
+    card.addEventListener('touchmove', onMove, { passive: false });
+    card.addEventListener('touchend', onEnd);
+    card.addEventListener('touchcancel', onEnd);
+
+    card.addEventListener('mousedown', onStart);
+    window.addEventListener('mousemove', onMove, { passive: false });
+    window.addEventListener('mouseup', onEnd);
 }
 
 // Estado inicial
@@ -434,7 +522,7 @@ const getSubscriptionIcon = (name, category) => {
     const lowerName = name.toLowerCase();
 
     // Marcas Específicas (Brands)
-    if (lowerName.includes('netflix')) return 'fa-solid fa-film';
+    if (lowerName.includes('netflix')) return 'fa-brands fa-netflix';
     if (lowerName.includes('spotify')) return 'fa-brands fa-spotify';
     if (lowerName.includes('deezer')) return 'fa-brands fa-deezer';
     if (lowerName.includes('youtube')) return 'fa-brands fa-youtube';
@@ -442,7 +530,7 @@ const getSubscriptionIcon = (name, category) => {
     if (lowerName.includes('apple') || lowerName.includes('icloud') || lowerName.includes('tv+')) return 'fa-brands fa-apple';
     if (lowerName.includes('google') || lowerName.includes('drive') || lowerName.includes('gemini') || lowerName.includes('youtube')) return 'fa-brands fa-google';
     if (lowerName.includes('microsoft') || lowerName.includes('office') || lowerName.includes('xbox') || lowerName.includes('game pass')) return 'fa-brands fa-microsoft';
-    if (lowerName.includes('adobe') || lowerName.includes('photoshop') || lowerName.includes('illustrator')) return 'fa-solid fa-palette';
+    if (lowerName.includes('adobe') || lowerName.includes('photoshop') || lowerName.includes('illustrator')) return 'fa-brands fa-adobe';
     if (lowerName.includes('dropbox')) return 'fa-brands fa-dropbox';
     if (lowerName.includes('playstation') || lowerName.includes('psn')) return 'fa-brands fa-playstation';
     if (lowerName.includes('steam')) return 'fa-brands fa-steam';
@@ -453,7 +541,7 @@ const getSubscriptionIcon = (name, category) => {
     if (lowerName.includes('discord')) return 'fa-brands fa-discord';
     if (lowerName.includes('nintendo') || lowerName.includes('switch')) return 'fa-brands fa-nintendo-switch';
     if (lowerName.includes('chatgpt') || lowerName.includes('openai')) return 'fa-solid fa-robot';
-    if (lowerName.includes('disney')) return 'fa-solid fa-wand-magic-sparkles';
+    if (lowerName.includes('disney')) return 'fa-brands fa-disney';
     if (lowerName.includes('ifood')) return 'fa-solid fa-utensils';
     if (lowerName.includes('hbo') || lowerName.includes('max')) return 'fa-solid fa-tv';
     if (lowerName.includes('paramount')) return 'fa-solid fa-tv';
@@ -974,6 +1062,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupNumericValidation();
     setupCurrencyMask();
     setupNameAutocomplete();
+    setupFormPullDownBackGesture();
 
     // Setup sort input change
     const sortInput = document.getElementById('sort-input');
