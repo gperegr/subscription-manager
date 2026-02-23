@@ -25,16 +25,35 @@
             <div class="p-5 rounded-[32px] mb-6 flex flex-col justify-between"
                 style="background: linear-gradient(180deg, #FFFFFF 0%, #F0F0F0 100%); min-height: 600px;">
 
-                <!-- Plasma Blob Centered -->
-                <div class="flex-1 flex items-center justify-center py-8">
-                    <div class="plasma-blob">
-                        <div class="text-center">
-                            <p class="text-black/50 mb-2 text-sm">Gasto Total Mensal</p>
-                            <p class="text-black font-bookmania font-normal text-[4rem] leading-none"
-                                id="total-monthly-cost">
-                                R$ 0,00
-                            </p>
+                <!-- Overview Slider: Total + Pizza -->
+                <div class="flex-1 py-8">
+                    <div class="overview-stage">
+                        <div class="plasma-blob" aria-hidden="true"></div>
+                        <div id="overview-slider" class="overview-slider">
+                            <div id="overview-track" class="overview-track">
+                                <div class="overview-slide">
+                                    <div class="overview-overlay overview-total text-center">
+                                        <p class="text-black/50 mb-2 text-sm">Gasto Total Mensal</p>
+                                        <p class="text-black font-bookmania font-normal text-[4rem] leading-none"
+                                            id="total-monthly-cost">
+                                            R$ 0,00
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="overview-slide">
+                                    <div class="overview-overlay category-pie-panel">
+                                        <p class="category-pie-title">Distribuição por Categoria</p>
+                                        <div id="category-pie" class="category-pie"></div>
+                                        <p id="category-pie-empty" class="category-pie-empty hidden">Sem assinaturas para exibir</p>
+                                        <div id="category-pie-legend" class="category-pie-legend"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                    <div class="overview-slider-hint" aria-hidden="true">
+                        <span class="overview-dot active"></span>
+                        <span class="overview-dot"></span>
                     </div>
                 </div>
 

@@ -566,6 +566,7 @@ const getSubscriptionIcon = (name, category) => {
 // Cores pastéis baseadas no App.tsx
 const PASTEL_COLORS = ['#B9CFFE', '#EDE1F5', '#FFE0E1', '#F4EFE6'];
 const DARK_TEXT_COLORS = ['#091F4D', '#240D33', '#3D0A0C', '#2E2719'];
+const PIE_COLORS = ['#091F4D', '#32528f', '#567abf', '#7f98cc', '#a5b6db', '#c8d1ea', '#2f3e63', '#4e5f90'];
 
 // Estado da interface
 let editingId = null;
@@ -637,6 +638,175 @@ const calculateMetrics = (sub) => {
     };
 };
 
+const updateOverviewDots = () => {
+    const slider = document.getElementById('overview-slider');
+    if (!slider) return;
+
+    const dots = document.querySelectorAll('.overview-slider-hint .overview-dot');
+    if (!dots || dots.length === 0) return;
+
+    const index = Math.round(slider.scrollLeft / Math.max(slider.clientWidth, 1));
+    dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+};
+
+const setupOverviewSlider = () => {
+    const slider = document.getElementById('overview-slider');
+    if (!slider) return;
+    if (slider.dataset.ready === 'true') return;
+    slider.dataset.ready = 'true';
+
+    slider.addEventListener('scroll', updateOverviewDots, { passive: true });
+
+    const dots = document.querySelectorAll('.overview-slider-hint .overview-dot');
+    dots?.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            slider.scrollTo({
+                left: slider.clientWidth * index,
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    let isDragging = false;
+    let dragStartX = 0;
+    let startScrollLeft = 0;
+
+    slider.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        isDragging = true;
+        dragStartX = e.clientX;
+        startScrollLeft = slider.scrollLeft;
+        slider.classList.add('dragging');
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const deltaX = e.clientX - dragStartX;
+        slider.scrollLeft = startScrollLeft - deltaX;
+    });
+
+    const endDrag = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        slider.classList.remove('dragging');
+    };
+
+    window.addEventListener('mouseup', endDrag);
+    window.addEventListener('mouseleave', endDrag);
+
+    updateOverviewDots();
+};
+
+const renderCategoryPie = (subs) => {
+    const pieEl = document.getElementById('category-pie');
+    const legendEl = document.getElementById('category-pie-legend');
+    const emptyEl = document.getElementById('category-pie-empty');
+    if (!pieEl || !legendEl || !emptyEl) return;
+
+    const categoryTotals = {};
+    let total = 0;
+
+    subs.forEach(sub => {
+        const monthly = calculateMetrics(sub).monthlyCost;
+        categoryTotals[sub.category] = (categoryTotals[sub.category] || 0) + monthly;
+        total += monthly;
+    });
+
+    const entries = Object.entries(categoryTotals)
+        .filter(([, value]) => value > 0)
+        .sort((a, b) => b[1] - a[1]);
+
+    if (entries.length === 0 || total <= 0) {
+        pieEl.style.background = 'conic-gradient(#000000 0deg 360deg)';
+        legendEl.innerHTML = '';
+        emptyEl.classList.remove('hidden');
+        return;
+    }
+
+    emptyEl.classList.add('hidden');
+
+    let currentDeg = 0;
+    const gradientParts = [];
+
+    entries.forEach(([, value], index) => {
+        const percent = (value / total) * 100;
+        const deg = (percent / 100) * 360;
+        const color = PIE_COLORS[index % PIE_COLORS.length];
+        const start = currentDeg;
+        const end = currentDeg + deg;
+        gradientParts.push(`${color} ${start}deg ${end}deg`);
+        currentDeg = end;
+    });
+
+    pieEl.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+
+    legendEl.innerHTML = entries.map(([category, value], index) => {
+        const percent = Math.round((value / total) * 100);
+        const color = PIE_COLORS[index % PIE_COLORS.length];
+        return `
+            <div class="category-pie-item" title="${category}: ${percent}%">
+                <span class="category-pie-color" style="background:${color};"></span>
+                <span class="category-pie-label">${category} (${percent}%)</span>
+            </div>
+        `;
+    }).join('');
+};
+
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+const getUsageEfficiency = (sub) => {
+    const periodDays = {
+        daily: 1,
+        weekly: 7,
+        monthly: 30,
+        yearly: 365
+    };
+
+    const usagePeriod = sub.usagePeriod || sub.period;
+    const paidPeriod = sub.period || 'monthly';
+    const usageDays = periodDays[usagePeriod];
+    const paidDays = periodDays[paidPeriod];
+
+    const usageCount = Number(sub.usageCount) || 0;
+
+    if (usageCount <= 0 || !usageDays || !paidDays) {
+        return {
+            hasData: false,
+            score: 50,
+            label: 'Sem dados de uso',
+            tone: 'neutral'
+        };
+    }
+
+    const usagesInPaidPeriod = usageCount * (paidDays / usageDays);
+    const score = clamp((usagesInPaidPeriod / paidDays) * 100, 0, 100);
+
+    if (score >= 80) {
+        return {
+            hasData: true,
+            score,
+            label: 'Bom aproveitamento',
+            tone: 'good'
+        };
+    }
+
+    if (score >= 40) {
+        return {
+            hasData: true,
+            score,
+            label: 'Aproveitamento moderado',
+            tone: 'medium'
+        };
+    }
+
+    return {
+        hasData: true,
+        score,
+        label: 'Pouco aproveitamento',
+        tone: 'bad'
+    };
+};
+
 // Renderizar Lista e Totais
 const renderSubscriptions = () => {
     const listEl = document.getElementById('subscriptions-list');
@@ -653,6 +823,7 @@ const renderSubscriptions = () => {
             </div>
         `;
         totalEl.textContent = formatCurrency(0);
+        renderCategoryPie([]);
         return;
     }
 
@@ -694,9 +865,12 @@ const renderSubscriptions = () => {
         // Header da Categoria
         const categoryHTML = `
             <div class="flex justify-between items-end mb-3 ml-1">
-                <h2 class="text-white font-bookmania text-2xl font-normal">
-                    ${category}
-                </h2>
+                <div class="flex items-center gap-2">
+                    <h2 class="text-white font-bookmania text-2xl font-normal">
+                        ${category}
+                    </h2>
+                    <span class="category-count-badge" aria-label="${subs.length} itens na categoria">${subs.length}</span>
+                </div>
                 <span class="text-white/50 text-sm font-medium mb-1">
                     ${formatCurrency(categoryTotal)}
                 </span>
@@ -711,6 +885,7 @@ const renderSubscriptions = () => {
         // Cartões de Assinatura
         subs.forEach((sub) => {
             const metrics = calculateMetrics(sub);
+            const efficiency = getUsageEfficiency(sub);
             const iconClass = getSubscriptionIcon(sub.name, sub.category);
             // Contêiner principal do Card
             const cardContainer = document.createElement('div');
@@ -749,6 +924,22 @@ const renderSubscriptions = () => {
                 `;
             }
 
+            const usageIndicatorHtml = efficiency.hasData ? `
+                <div class="usage-indicator ${efficiency.tone}">
+                    <div class="usage-indicator-header">
+                        <span class="usage-indicator-badge">${efficiency.label}</span>
+                        <span class="usage-indicator-value">${Math.round(efficiency.score)}%</span>
+                    </div>
+                    <div class="usage-indicator-track" role="img" aria-label="Indicador de custo por uso, esquerda pior e direita melhor">
+                        <div class="usage-indicator-pointer" style="left: ${efficiency.score}%;"></div>
+                    </div>
+                    <div class="usage-indicator-legend">
+                        <span>Pouco uso</span>
+                        <span>Bom uso</span>
+                    </div>
+                </div>
+            ` : '';
+
             cardContainer.innerHTML = `
                 <!-- Background Actions -->
                 <div class="swipe-actions">
@@ -778,6 +969,7 @@ const renderSubscriptions = () => {
                         ${familyHtml}
                         ${usageHtml}
                     </div>
+                    ${usageIndicatorHtml}
                 </div>
             `;
 
@@ -908,6 +1100,7 @@ const renderSubscriptions = () => {
     });
 
     totalEl.textContent = formatCurrency(totalMonthlyCost);
+    renderCategoryPie(sortedSubs);
 };
 
 // Adicionar / Editar Assinatura
@@ -1063,6 +1256,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCurrencyMask();
     setupNameAutocomplete();
     setupFormPullDownBackGesture();
+    setupOverviewSlider();
 
     // Setup sort input change
     const sortInput = document.getElementById('sort-input');
