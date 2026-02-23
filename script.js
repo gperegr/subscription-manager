@@ -264,7 +264,7 @@ const knownServices = [
     { name: 'Amazon Prime', category: 'Compras', icon: 'fa-brands fa-amazon' },
     { name: 'Apple TV+', category: 'Streamings', icon: 'fa-brands fa-apple' },
     { name: 'iCloud', category: 'Softwares', icon: 'fa-brands fa-apple' },
-    { name: 'Google Drive', category: 'Softwares', icon: 'fa-brands fa-google' },
+    { name: 'Google One', category: 'Softwares', icon: 'fa-brands fa-google' },
     { name: 'Microsoft 365', category: 'Softwares', icon: 'fa-brands fa-microsoft' },
     { name: 'Xbox Game Pass', category: 'Streamings', icon: 'fa-brands fa-xbox' },
     { name: 'Nintendo Switch Online', category: 'Streamings', icon: 'fa-brands fa-nintendo-switch' },
@@ -1080,3 +1080,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial render
     window.renderSubscriptions();
 });
+
