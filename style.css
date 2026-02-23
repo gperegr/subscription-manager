@@ -49,7 +49,8 @@
 
 /* Estilo de Erro de Validação atualizado pro design dark */
 .input-error {
-    box-shadow: 0 0 0 2px #d4183d !important;
+    box-shadow: inset 0 0 0 1px #d4183d !important;
+    border-color: #d4183d !important;
     animation: shake 0.3s ease-in-out;
 }
 
