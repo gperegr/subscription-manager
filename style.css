@@ -60,6 +60,12 @@ input[type=number]::-webkit-outer-spin-button {
     margin: 0;
 }
 
+/* Firefox remove spin buttons */
+input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
 body {
     background-color: #000000;
     color: #FFFFFF;
@@ -196,4 +202,19 @@ body {
 
 .swipe-content.swiping {
     transition: none;
+}
+
+/* Slide Down Animation for Members Input */
+.slide-down-container {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin-top: 0;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.slide-down-container.open {
+    max-height: 100px;
+    opacity: 1;
+    margin-top: 0.75rem; /* equivalent to gap-3 */
 }

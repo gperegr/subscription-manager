@@ -9,6 +9,7 @@ function setupCustomDropdowns() {
         const arrow = button.querySelector('.fa-chevron-down');
 
         const isSortSelect = dropdown.dataset.id === 'sort-select';
+        const isTypeSelect = dropdown.dataset.id === 'type-select';
 
         // Fix: Ensure dropdown styles are correct
         if (isSortSelect) {
@@ -80,6 +81,11 @@ function setupCustomDropdowns() {
                 // Update value
                 hiddenInput.value = option.dataset.value;
 
+                // Special logic for Plan Type
+                if (isTypeSelect) {
+                    toggleMembersInput(option.dataset.value);
+                }
+
                 // Trigger change event if needed
                 const event = new Event('change');
                 hiddenInput.dispatchEvent(event);
@@ -111,6 +117,62 @@ function setupCustomDropdowns() {
     });
 }
 
+// Logic for Plan Type Toggle
+function setupPlanTypeToggle() {
+    const buttons = document.querySelectorAll('.plan-type-btn');
+    const hiddenInput = document.getElementById('sub-type');
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const value = btn.dataset.value;
+            setPlanType(value);
+        });
+    });
+}
+
+function setPlanType(value) {
+    const hiddenInput = document.getElementById('sub-type');
+    const buttons = document.querySelectorAll('.plan-type-btn');
+    const glider = document.getElementById('plan-type-glider');
+
+    hiddenInput.value = value;
+    toggleMembersInput(value);
+
+    // Move glider
+    if (glider) {
+        glider.style.transform = value === 'family' ? 'translateX(100%)' : 'translateX(0)';
+    }
+
+    buttons.forEach(btn => {
+        if (btn.dataset.value === value) {
+            // Active State
+            btn.classList.remove('text-white/50', 'hover:text-white');
+            btn.classList.add('text-black');
+        } else {
+            // Inactive State
+            btn.classList.remove('text-black');
+            btn.classList.add('text-white/50', 'hover:text-white');
+        }
+    });
+}
+
+// Toggle Members Input Visibility
+function toggleMembersInput(type) {
+    const container = document.getElementById('members-container');
+    const input = document.getElementById('sub-members');
+    
+    if (type === 'family') {
+        container.classList.add('open');
+        input.setAttribute('required', 'true');
+        input.setAttribute('min', '2');
+    } else {
+        container.classList.remove('open');
+        input.removeAttribute('required');
+        input.removeAttribute('min');
+        input.value = '';
+    }
+}
+
 function setDropdownValue(dropdownId, value) {
     const hiddenInput = document.getElementById(dropdownId);
     if (!hiddenInput) return;
@@ -119,6 +181,7 @@ function setDropdownValue(dropdownId, value) {
     const options = dropdown.querySelectorAll('.select-option');
     const label = dropdown.querySelector('.select-label');
     const isSortSelect = dropdown.dataset.id === 'sort-select';
+    const isTypeSelect = dropdown.dataset.id === 'type-select';
 
     const optionToSelect = Array.from(options).find(opt => opt.dataset.value === value) || options[0];
 
@@ -147,7 +210,142 @@ function setDropdownValue(dropdownId, value) {
         optionToSelect.classList.add('font-semibold');
 
         hiddenInput.value = optionToSelect.dataset.value;
+
+        if (isTypeSelect) {
+            toggleMembersInput(optionToSelect.dataset.value);
+        }
     }
+}
+
+function setupNumericValidation() {
+    const inputs = document.querySelectorAll('input[type="number"]');
+    inputs.forEach(input => {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === '-' || e.key === 'e') {
+                e.preventDefault();
+            }
+        });
+        input.addEventListener('input', () => {
+            if (input.value < 0) input.value = Math.abs(input.value);
+        });
+    });
+}
+
+function setupCurrencyMask() {
+    const input = document.getElementById('sub-price');
+    
+    input.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value === '') {
+            e.target.value = '';
+            return;
+        }
+        
+        const floatValue = parseFloat(value) / 100;
+        e.target.value = floatValue.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+    });
+}
+
+const parseCurrencyInput = (value) => {
+    if (!value) return 0;
+    return parseFloat(value.replace(/\D/g, '')) / 100;
+};
+
+// Autocomplete Logic
+const knownServices = [
+    { name: 'Netflix', category: 'Streamings', icon: 'fa-solid fa-film' },
+    { name: 'Spotify', category: 'Streamings', icon: 'fa-brands fa-spotify' },
+    { name: 'Deezer', category: 'Streamings', icon: 'fa-brands fa-deezer' },
+    { name: 'Apple Music', category: 'Streamings', icon: 'fa-brands fa-apple' },
+    { name: 'YouTube Premium', category: 'Streamings', icon: 'fa-brands fa-youtube' },
+    { name: 'Amazon Prime', category: 'Compras', icon: 'fa-brands fa-amazon' },
+    { name: 'Apple TV+', category: 'Streamings', icon: 'fa-brands fa-apple' },
+    { name: 'iCloud', category: 'Softwares', icon: 'fa-brands fa-apple' },
+    { name: 'Google Drive', category: 'Softwares', icon: 'fa-brands fa-google' },
+    { name: 'Microsoft 365', category: 'Softwares', icon: 'fa-brands fa-microsoft' },
+    { name: 'Xbox Game Pass', category: 'Streamings', icon: 'fa-brands fa-xbox' },
+    { name: 'Nintendo Switch Online', category: 'Streamings', icon: 'fa-brands fa-nintendo-switch' },
+    { name: 'Adobe Creative Cloud', category: 'Softwares', icon: 'fa-solid fa-palette' },
+    { name: 'Dropbox', category: 'Softwares', icon: 'fa-brands fa-dropbox' },
+    { name: 'PlayStation Plus', category: 'Streamings', icon: 'fa-brands fa-playstation' },
+    { name: 'Steam', category: 'Streamings', icon: 'fa-brands fa-steam' },
+    { name: 'Twitch', category: 'Streamings', icon: 'fa-brands fa-twitch' },
+    { name: 'GitHub Copilot', category: 'Softwares', icon: 'fa-brands fa-github' },
+    { name: 'ChatGPT Plus', category: 'Softwares', icon: 'fa-solid fa-robot' },
+    { name: 'Canva', category: 'Softwares', icon: 'fa-brands fa-canva' },
+    { name: 'Slack', category: 'Softwares', icon: 'fa-brands fa-slack' },
+    { name: 'Discord Nitro', category: 'Softwares', icon: 'fa-brands fa-discord' },
+    { name: 'Disney+', category: 'Streamings', icon: 'fa-solid fa-wand-magic-sparkles' },
+    { name: 'HBO Max', category: 'Streamings', icon: 'fa-solid fa-tv' },
+    { name: 'Paramount+', category: 'Streamings', icon: 'fa-solid fa-tv' },
+    { name: 'Globoplay', category: 'Streamings', icon: 'fa-solid fa-play' },
+    { name: 'Gympass', category: 'Fitness', icon: 'fa-solid fa-dumbbell' },
+    { name: 'Smart Fit', category: 'Fitness', icon: 'fa-solid fa-dumbbell' },
+    { name: 'Headspace', category: 'Saúde', icon: 'fa-solid fa-brain' },
+    { name: 'Duolingo', category: 'Educação', icon: 'fa-solid fa-language' },
+    { name: 'Alura', category: 'Educação', icon: 'fa-solid fa-code' },
+    { name: 'Uber One', category: 'Outros', icon: 'fa-brands fa-uber' },
+    { name: 'Rappi Prime', category: 'Outros', icon: 'fa-solid fa-motorcycle' },
+    { name: 'Mercado Livre', category: 'Compras', icon: 'fa-solid fa-handshake' },
+    { name: 'Kindle Unlimited', category: 'Educação', icon: 'fa-brands fa-amazon' },
+    { name: 'iFood Club', category: 'Outros', icon: 'fa-solid fa-utensils' }
+];
+
+function setupNameAutocomplete() {
+    const input = document.getElementById('sub-name');
+    const suggestionsBox = document.getElementById('name-suggestions');
+
+    if (!input || !suggestionsBox) return;
+
+    input.addEventListener('input', () => {
+        const value = input.value.toLowerCase();
+        suggestionsBox.innerHTML = '';
+
+        if (value.length < 1) {
+            suggestionsBox.classList.add('hidden');
+            return;
+        }
+
+        const matches = knownServices.filter(service => 
+            service.name.toLowerCase().includes(value)
+        );
+
+        if (matches.length > 0) {
+            suggestionsBox.classList.remove('hidden');
+            matches.forEach(service => {
+                const div = document.createElement('div');
+                div.className = 'px-5 py-3 text-white/80 hover:bg-white/10 cursor-pointer flex items-center gap-3 transition-colors';
+                div.innerHTML = `
+                    <i class="${service.icon} w-5 text-center"></i>
+                    <span>${service.name}</span>
+                `;
+                
+                div.addEventListener('click', () => {
+                    input.value = service.name;
+                    suggestionsBox.classList.add('hidden');
+                    
+                    // Auto-select category if valid
+                    if (service.category) {
+                        setDropdownValue('sub-category', service.category);
+                    }
+                });
+
+                suggestionsBox.appendChild(div);
+            });
+        } else {
+            suggestionsBox.classList.add('hidden');
+        }
+    });
+
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !suggestionsBox.contains(e.target)) {
+            suggestionsBox.classList.add('hidden');
+        }
+    });
 }
 
 // Estado inicial
@@ -164,7 +362,9 @@ const defaultSubscriptions = [
         price: 55.90,
         period: "monthly",
         usageCount: 20,
-        usagePeriod: "monthly"
+        usagePeriod: "monthly",
+        type: "family",
+        members: 4
     },
     {
         id: 2,
@@ -173,7 +373,9 @@ const defaultSubscriptions = [
         price: 21.90,
         period: "monthly",
         usageCount: 30,
-        usagePeriod: "monthly"
+        usagePeriod: "monthly",
+        type: "individual",
+        members: 1
     },
     {
         id: 3,
@@ -182,7 +384,9 @@ const defaultSubscriptions = [
         price: 299.00,
         period: "monthly",
         usageCount: 12,
-        usagePeriod: "monthly"
+        usagePeriod: "monthly",
+        type: "individual",
+        members: 1
     },
     {
         id: 4,
@@ -191,7 +395,9 @@ const defaultSubscriptions = [
         price: 239.88,
         period: "yearly",
         usageCount: 25,
-        usagePeriod: "yearly"
+        usagePeriod: "yearly",
+        type: "individual",
+        members: 1
     }
 ];
 
@@ -221,6 +427,52 @@ const usagePeriodLabels = {
     'weekly': 'por semana',
     'monthly': 'por mês',
     'yearly': 'por ano'
+};
+
+// Mapeamento de Ícones
+const getSubscriptionIcon = (name, category) => {
+    const lowerName = name.toLowerCase();
+
+    // Marcas Específicas (Brands)
+    if (lowerName.includes('netflix')) return 'fa-solid fa-film';
+    if (lowerName.includes('spotify')) return 'fa-brands fa-spotify';
+    if (lowerName.includes('deezer')) return 'fa-brands fa-deezer';
+    if (lowerName.includes('youtube')) return 'fa-brands fa-youtube';
+    if (lowerName.includes('amazon') || lowerName.includes('prime')) return 'fa-brands fa-amazon';
+    if (lowerName.includes('apple') || lowerName.includes('icloud') || lowerName.includes('tv+')) return 'fa-brands fa-apple';
+    if (lowerName.includes('google') || lowerName.includes('drive') || lowerName.includes('gemini') || lowerName.includes('youtube')) return 'fa-brands fa-google';
+    if (lowerName.includes('microsoft') || lowerName.includes('office') || lowerName.includes('xbox') || lowerName.includes('game pass')) return 'fa-brands fa-microsoft';
+    if (lowerName.includes('adobe') || lowerName.includes('photoshop') || lowerName.includes('illustrator')) return 'fa-solid fa-palette';
+    if (lowerName.includes('dropbox')) return 'fa-brands fa-dropbox';
+    if (lowerName.includes('playstation') || lowerName.includes('psn')) return 'fa-brands fa-playstation';
+    if (lowerName.includes('steam')) return 'fa-brands fa-steam';
+    if (lowerName.includes('twitch')) return 'fa-brands fa-twitch';
+    if (lowerName.includes('github')) return 'fa-brands fa-github';
+    if (lowerName.includes('canva')) return 'fa-brands fa-canva';
+    if (lowerName.includes('slack')) return 'fa-brands fa-slack';
+    if (lowerName.includes('discord')) return 'fa-brands fa-discord';
+    if (lowerName.includes('nintendo') || lowerName.includes('switch')) return 'fa-brands fa-nintendo-switch';
+    if (lowerName.includes('chatgpt') || lowerName.includes('openai')) return 'fa-solid fa-robot';
+    if (lowerName.includes('disney')) return 'fa-solid fa-wand-magic-sparkles';
+    if (lowerName.includes('ifood')) return 'fa-solid fa-utensils';
+    if (lowerName.includes('hbo') || lowerName.includes('max')) return 'fa-solid fa-tv';
+    if (lowerName.includes('paramount')) return 'fa-solid fa-tv';
+    if (lowerName.includes('globo') || lowerName.includes('telecine')) return 'fa-solid fa-play';
+    if (lowerName.includes('duolingo')) return 'fa-solid fa-language';
+    if (lowerName.includes('headspace') || lowerName.includes('calm')) return 'fa-solid fa-brain';
+    if (lowerName.includes('alura') || lowerName.includes('udemy')) return 'fa-solid fa-code';
+
+    // Ícones Genéricos por Categoria
+    switch (category) {
+        case 'Streamings': return 'fa-solid fa-film';
+        case 'Softwares': return 'fa-solid fa-laptop-code';
+        case 'Saúde': return 'fa-solid fa-heart-pulse';
+        case 'Mercado': return 'fa-solid fa-basket-shopping';
+        case 'Educação': return 'fa-solid fa-graduation-cap';
+        case 'Compras': return 'fa-solid fa-bag-shopping';
+        case 'Fitness': return 'fa-solid fa-dumbbell';
+        default: return 'fa-solid fa-box-open'; // Outros
+    }
 };
 
 // Cores pastéis baseadas no App.tsx
@@ -261,6 +513,7 @@ window.changeSort = (sortValue) => {
 const calculateMetrics = (sub) => {
     let monthlyCost = 0;
     let costPerUse = 0;
+    let costPerPerson = 0;
 
     if (sub.period === 'monthly') monthlyCost = sub.price;
     else if (sub.period === 'yearly') monthlyCost = sub.price / 12;
@@ -274,12 +527,25 @@ const calculateMetrics = (sub) => {
         else if (sub.usagePeriod === 'monthly') usagesPerMonth = sub.usageCount;
         else if (sub.usagePeriod === 'yearly') usagesPerMonth = sub.usageCount / 12;
 
-        costPerUse = monthlyCost / usagesPerMonth;
+        // Se for família, o custo por uso é baseado na cota da pessoa (monthlyCost / members)
+        let baseCostForUse = monthlyCost;
+        if (sub.type === 'family' && sub.members > 1) {
+            baseCostForUse = monthlyCost / sub.members;
+        }
+        costPerUse = baseCostForUse / usagesPerMonth;
+    }
+
+    // Cost per person logic
+    if (sub.type === 'family' && sub.members > 1) {
+        costPerPerson = monthlyCost / sub.members;
+    } else {
+        costPerPerson = monthlyCost;
     }
 
     return {
         monthlyCost,
-        costPerUse
+        costPerUse,
+        costPerPerson
     };
 };
 
@@ -357,6 +623,7 @@ const renderSubscriptions = () => {
         // Cartões de Assinatura
         subs.forEach((sub) => {
             const metrics = calculateMetrics(sub);
+            const iconClass = getSubscriptionIcon(sub.name, sub.category);
             // Contêiner principal do Card
             const cardContainer = document.createElement('div');
             cardContainer.className = `scroll-reveal swipe-container`;
@@ -365,14 +632,31 @@ const renderSubscriptions = () => {
             let usageHtml = '';
             if (sub.usageCount > 0) {
                 const usageLabel = usagePeriodLabels[sub.usagePeriod] || 'no período';
+                
+                // Ajusta o rótulo se for cálculo familiar
+                const costPerUseLabel = (sub.type === 'family' && sub.members > 1) 
+                    ? 'Custo/Uso (Pessoa):' 
+                    : 'Custo por Uso:';
+
                 usageHtml = `
                     <div class="flex justify-between items-baseline gap-2">
                         <span style="color: ${textColor}; opacity: 0.7; font-size: 0.8125rem;">Uso:</span>
                         <span style="color: ${textColor}; font-weight: 500; font-size: 0.9375rem;">${sub.usageCount}x ${usageLabel}</span>
                     </div>
                     <div class="flex justify-between items-baseline gap-2 pt-2 border-t border-black/10">
-                        <span style="color: ${textColor}; opacity: 0.7; font-size: 0.8125rem;">Custo por Uso:</span>
+                        <span style="color: ${textColor}; opacity: 0.7; font-size: 0.8125rem;">${costPerUseLabel}</span>
                         <span style="color: ${textColor}; font-weight: 600; font-size: 1.125rem;">${formatCurrency(metrics.costPerUse)}</span>
+                    </div>
+                `;
+            }
+
+            // HTML para Custo por Pessoa (se for família)
+            let familyHtml = '';
+            if (sub.type === 'family' && sub.members > 1) {
+                familyHtml = `
+                    <div class="flex justify-between items-baseline gap-2">
+                        <span style="color: ${textColor}; opacity: 0.7; font-size: 0.8125rem;">Por Pessoa (${sub.members}):</span>
+                        <span style="color: ${textColor}; font-weight: 600; font-size: 0.9375rem;">${formatCurrency(metrics.costPerPerson)}</span>
                     </div>
                 `;
             }
@@ -390,8 +674,9 @@ const renderSubscriptions = () => {
 
                 <!-- Swipeable Content -->
                 <div class="swipe-content relative p-5 flex flex-col justify-between" style="background-color: ${categoryColor}; color: ${textColor}; min-height: 140px;">
-                    <h3 class="mb-3 font-bookmania" style="color: ${textColor}; font-size: 1.375rem; font-weight: 400; line-height: 1.3;">
-                        ${sub.name}
+                    <h3 class="mb-3 font-bookmania flex items-center gap-2" style="color: ${textColor}; font-size: 1.375rem; font-weight: 400; line-height: 1.3;">
+                        <i class="${iconClass} opacity-80 text-lg"></i>
+                        <span>${sub.name}</span>
                     </h3>
                     <div class="space-y-2">
                         <div class="flex justify-between items-baseline gap-2">
@@ -402,6 +687,7 @@ const renderSubscriptions = () => {
                             <span style="color: ${textColor}; opacity: 0.7; font-size: 0.8125rem;">Custo Mensal:</span>
                             <span style="color: ${textColor}; font-weight: 600; font-size: 1.125rem;">${formatCurrency(metrics.monthlyCost)}</span>
                         </div>
+                        ${familyHtml}
                         ${usageHtml}
                     </div>
                 </div>
@@ -555,6 +841,16 @@ document.getElementById('subscription-form').addEventListener('submit', (e) => {
         return;
     }
 
+    const priceVal = parseCurrencyInput(document.getElementById('sub-price').value);
+    if (priceVal <= 0) {
+        const field = document.getElementById('sub-price');
+        field.classList.remove('input-error');
+        void field.offsetWidth;
+        field.classList.add('input-error');
+        field.addEventListener('input', () => field.classList.remove('input-error'), { once: true });
+        return;
+    }
+
     const usagePeriodVal = document.getElementById('sub-usage-period').value;
     const periodSelected = document.getElementById('sub-period').value;
 
@@ -562,10 +858,12 @@ document.getElementById('subscription-form').addEventListener('submit', (e) => {
         id: editingId ? editingId : Date.now(),
         name: document.getElementById('sub-name').value,
         category: document.getElementById('sub-category').value,
-        price: parseFloat(document.getElementById('sub-price').value),
+        price: priceVal,
         period: periodSelected,
         usageCount: document.getElementById('sub-usage-count').value ? parseInt(document.getElementById('sub-usage-count').value) : 0,
-        usagePeriod: usagePeriodVal
+        usagePeriod: usagePeriodVal,
+        type: document.getElementById('sub-type').value,
+        members: document.getElementById('sub-members').value ? parseInt(document.getElementById('sub-members').value) : 1
     };
 
     if (editingId) {
@@ -577,6 +875,7 @@ document.getElementById('subscription-form').addEventListener('submit', (e) => {
         document.getElementById('sub-name').value = '';
         document.getElementById('sub-price').value = '';
         document.getElementById('sub-usage-count').value = '';
+        document.getElementById('sub-members').value = '';
     }
 
     saveSubscriptions();
@@ -585,6 +884,7 @@ document.getElementById('subscription-form').addEventListener('submit', (e) => {
     setDropdownValue('sub-category', "Streamings");
     setDropdownValue('sub-period', "monthly");
     setDropdownValue('sub-usage-period', "monthly");
+    setPlanType("individual");
 
     toggleView('main');
 
@@ -600,10 +900,12 @@ window.editSubscription = (id) => {
 
     document.getElementById('sub-name').value = sub.name;
     setDropdownValue('sub-category', sub.category);
-    document.getElementById('sub-price').value = sub.price;
+    document.getElementById('sub-price').value = formatCurrency(sub.price);
     setDropdownValue('sub-period', sub.period);
     document.getElementById('sub-usage-count').value = sub.usageCount > 0 ? sub.usageCount : '';
     setDropdownValue('sub-usage-period', sub.usagePeriod || sub.period || 'monthly');
+    setPlanType(sub.type || 'individual');
+    document.getElementById('sub-members').value = sub.members > 1 ? sub.members : '';
 
     editingId = id;
 
@@ -619,6 +921,7 @@ window.cancelEdit = () => {
     document.getElementById('sub-name').value = '';
     document.getElementById('sub-price').value = '';
     document.getElementById('sub-usage-count').value = '';
+    document.getElementById('sub-members').value = '';
 
     document.getElementById('form-title').innerText = 'Nova Assinatura';
     document.getElementById('submit-btn').innerText = 'Adicionar Assinatura';
@@ -627,6 +930,7 @@ window.cancelEdit = () => {
     setDropdownValue('sub-category', "Streamings");
     setDropdownValue('sub-period', "monthly");
     setDropdownValue('sub-usage-period', "monthly");
+    setPlanType("individual");
 
     document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
 
@@ -666,6 +970,10 @@ window.renderSubscriptions = () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     setupCustomDropdowns();
+    setupPlanTypeToggle();
+    setupNumericValidation();
+    setupCurrencyMask();
+    setupNameAutocomplete();
 
     // Setup sort input change
     const sortInput = document.getElementById('sort-input');

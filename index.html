@@ -12,7 +12,7 @@
     <!-- Configuração de Utilitários Genéricos (Tailwind mantido para layout grid/flex, espaçamentos p-*, m-*) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -108,9 +108,12 @@
                     <form id="subscription-form" class="space-y-5" novalidate>
                         <div>
                             <label class="block text-white/70 mb-2 text-sm">Nome do Serviço</label>
-                            <input type="text" id="sub-name" required placeholder="Ex: Netflix, Spotify..."
-                                class="w-full px-4 py-3 rounded-2xl text-white border border-white/10 transition-colors focus:border-white/30 outline-none placeholder-white/30 text-base"
-                                style="background-color: #080808;">
+                            <div class="relative">
+                                <input type="text" id="sub-name" required placeholder="Ex: Netflix, Spotify..." autocomplete="off"
+                                    class="w-full px-4 py-3 rounded-2xl text-white border border-white/10 transition-colors focus:border-white/30 outline-none placeholder-white/30 text-base"
+                                    style="background-color: #080808;">
+                                <div id="name-suggestions" class="hidden absolute top-full left-0 right-0 mt-2 rounded-[24px] overflow-hidden border border-white/10 z-50 bg-[#1A1C19] shadow-xl max-h-[200px] overflow-y-auto"></div>
+                            </div>
                         </div>
 
                         <div>
@@ -157,10 +160,33 @@
                             </div>
                         </div>
 
+                        <!-- Tipo de Plano e Membros -->
+                        <div class="flex flex-col">
+                            <div>
+                                <label class="block text-white/70 mb-2 text-sm">Tipo de Plano</label>
+                                <div class="flex bg-[#080808] rounded-2xl p-1 border border-white/10 relative h-[50px]">
+                                    <input type="hidden" id="sub-type" value="individual">
+                                    <div id="plan-type-glider" class="absolute top-1 left-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-xl transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] z-0"></div>
+                                    <button type="button" class="plan-type-btn flex-1 rounded-xl text-sm font-medium transition-colors duration-200 z-10 relative text-black flex items-center justify-center" data-value="individual">
+                                        <i class="fa-solid fa-user mr-2"></i>Individual
+                                    </button>
+                                    <button type="button" class="plan-type-btn flex-1 rounded-xl text-sm font-medium transition-colors duration-200 z-10 relative text-white/50 hover:text-white flex items-center justify-center" data-value="family">
+                                        <i class="fa-solid fa-users mr-2"></i>Família
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="members-container" class="slide-down-container">
+                                <label class="block text-white/70 mb-2 text-sm">Pessoas</label>
+                                <input type="number" inputmode="numeric" id="sub-members" min="1" step="1" placeholder="Qtd."
+                                    class="w-full px-4 py-3 rounded-2xl text-white border border-white/10 transition-colors focus:border-white/30 outline-none placeholder-white/30 text-base"
+                                    style="background-color: #080808;">
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-white/70 mb-2 text-sm">Valor</label>
-                                <input type="number" id="sub-price" required min="0.01" step="0.01" placeholder="0.00"
+                                <input type="text" inputmode="numeric" id="sub-price" required placeholder="R$ 0,00"
                                     class="w-full px-4 py-3 rounded-2xl text-white border border-white/10 transition-colors focus:border-white/30 outline-none placeholder-white/30 text-base"
                                     style="background-color: #080808;">
                             </div>
@@ -197,7 +223,7 @@
                         <div class="grid grid-cols-2 gap-3 pb-2">
                             <div>
                                 <label class="block text-white/70 mb-2 text-sm">Frequência</label>
-                                <input type="number" id="sub-usage-count" min="0" step="1" placeholder="Ex: 12"
+                                <input type="number" inputmode="numeric" id="sub-usage-count" min="0" step="1" placeholder="Ex: 12"
                                     class="w-full px-4 py-3 rounded-2xl text-white border border-white/10 transition-colors focus:border-white/30 outline-none placeholder-white/30 text-base"
                                     style="background-color: #080808;">
                             </div>
