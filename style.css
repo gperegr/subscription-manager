@@ -1,4 +1,9 @@
 /* Animações de Transição de Tela mantidas */
+html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
 .anim-enter {
     animation: fadeScaleIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
