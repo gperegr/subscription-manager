@@ -115,7 +115,8 @@ body {
 }
 
 .plasma-blob {
-    width: 340px;
+    width: 100%;
+    max-width: 340px;
     height: 340px;
     background-color: #B9CFFE;
     animation: morph 12s ease-in-out infinite;
@@ -176,7 +177,8 @@ body {
 }
 
 .overview-overlay {
-    width: 340px;
+    width: 100%;
+    max-width: 340px;
     min-height: 340px;
     display: flex;
     flex-direction: column;
@@ -206,7 +208,8 @@ body {
 }
 
 .category-pie-panel {
-    width: 340px;
+    width: 100%;
+    max-width: 340px;
     min-height: 340px;
     border-radius: 34px;
     padding: 22px 18px;
