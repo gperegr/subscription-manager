@@ -74,6 +74,7 @@ body {
     -webkit-font-smoothing: antialiased;
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
+    touch-action: pan-y;
 }
 
 .font-bookmania {
