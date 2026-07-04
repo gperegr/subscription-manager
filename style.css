@@ -1,5 +1,6 @@
 /* Animações de Transição de Tela mantidas */
-html, body {
+html,
+body {
     max-width: 100vw;
     overflow-x: hidden;
 }
@@ -463,4 +464,36 @@ body {
 
 .usage-indicator.neutral .usage-indicator-badge {
     background: #000000;
+}
+
+/* =========================================================
+   Ajustes Responsivos para Mobile (Telas até 480px)
+   ========================================================= */
+@media (max-width: 480px) {
+
+    /* Garante que a lista ocupe o máximo do contêiner sem vazar */
+    #subscriptions-list {
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* Força os cards a respeitarem a largura da tela */
+    .swipe-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .swipe-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    /* Impede que textos muito longos dentro do card quebrem a largura */
+    .swipe-content * {
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+    }
 }
